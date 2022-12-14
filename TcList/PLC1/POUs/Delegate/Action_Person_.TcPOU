@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="Action_Person_" Id="{b5be6651-38ea-4258-9eec-f3671df0c0ae}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FINAL Action_Person_ IMPLEMENTS I_Action
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+]]></ST>
+    </Implementation>
+    <Method Name="Perform" Id="{a2abe9cf-f46d-4c8a-b5ae-074ef44d8a54}">
+      <Declaration><![CDATA[METHOD Perform
+VAR_INPUT
+    performCaseNumber : INT;
+END_VAR
+VAR_IN_OUT
+	item : POINTER TO Object;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE performCaseNumber OF
+    1 :
+    GVL.CastHelper.ObjectToPerson(item)^.SetAge(50);
+    2 :
+    GVL.CastHelper.ObjectToPerson(item)^.SetName('Sylvia');
+ELSE
+    RETURN;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

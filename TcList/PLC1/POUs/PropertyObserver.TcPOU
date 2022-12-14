@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="PropertyObserver" Id="{4ee90097-ced5-48cf-a214-6cb507ca68bd}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PropertyObserver EXTENDS Object IMPLEMENTS I_Observer
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+    onUpdateCounter : INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="OnError" Id="{dcfdad8f-5616-4c87-b4ca-66d436821b42}">
+      <Declaration><![CDATA[METHOD OnError
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="OnUpdate" Id="{43519026-10e7-428b-93a2-baf4968a1715}">
+      <Declaration><![CDATA[METHOD OnUpdate
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[onUpdateCounter := onUpdateCounter + 1;]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

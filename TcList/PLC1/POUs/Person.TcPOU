@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="Person" Id="{b35078b8-f2ca-46dd-b46c-a75c80a795cc}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Person Extends Object
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+    _age : INT;
+    _name : STRING;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="Equals" Id="{11e1f2c0-8e08-4a87-b65f-5107d7629633}">
+      <Declaration><![CDATA[METHOD Equals : BOOL
+VAR_INPUT
+    other : I_Equatable;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetAge() = GVL.CastHelper.I_EquatableToPerson(other)^.GetAge() THEN
+    Equals := TRUE;
+ELSE
+    Equals := FALSE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetAge" Id="{de6e54a3-dee1-429d-98ce-448ad1488ce6}">
+      <Declaration><![CDATA[METHOD GetAge : int
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[GetAge := _age;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetName" Id="{e4d9f3f5-7f81-46fa-abcb-51aadbd75627}">
+      <Declaration><![CDATA[METHOD PUBLIC GetName : STRING
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[GetName := _name;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetAge" Id="{9a4bd406-b6ed-42f8-b11a-3f8c9068e4d4}">
+      <Declaration><![CDATA[METHOD SetAge : int
+VAR_INPUT
+    age : int;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_age := age;
+SetAge := _age;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetName" Id="{28bf7cbf-f50a-4e9c-8e76-c1bc7c107c08}">
+      <Declaration><![CDATA[METHOD PUBLIC SetName : STRING
+VAR_INPUT
+    name : STRING;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_name := name;
+SetName := _name;]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

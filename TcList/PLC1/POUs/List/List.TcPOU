@@ -1,0 +1,757 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="List" Id="{18c64bd7-55c4-43e9-ac57-fb146dcb53f2}" SpecialFunc="None">
+    <Declaration><![CDATA[(*
+Base List which includes core and generic functionality of a list.
+To have a list of any desired type (X) a new FB that Extends this FB should be created which can implement any desired Protected methods of this FB.
+*)
+FUNCTION_BLOCK List
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+    _internalArray : ARRAY [0..GVL.LIST_UPPER_BOUND] OF LWORD;
+    _count : INT := 0;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="_addItem" Id="{8a76e11b-8230-431f-8cf8-70abf0693914}">
+      <Declaration><![CDATA[(*
+Purpose: Adds the address of an Object to the end of the List
+Parameters: item:Object, The object to be added to the end of the List
+Return: INT, The zero-based index of added object if item is added, otherwise -1
+*)
+METHOD PROTECTED _addItem : INT
+VAR_IN_OUT
+    item : Object;
+END_VAR
+VAR
+    _result : INT := -1;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() <= GVL.LIST_UPPER_BOUND THEN
+    _internalArray[_count] := ADR(item);
+    _result := _count;
+    _count := _count + 1;
+END_IF
+_addItem := _result;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_addRange" Id="{ddcf752a-2f38-4e7f-9e9f-9e0565e45352}">
+      <Declaration><![CDATA[(*
+Purpose: Adds the address of the elements of the specified array to the end of the List
+Parameters: items:ARRAY[*] OF POINTER TO Object, The array whose elements should be added to the end of the List
+Return: INT, The zero-based index of the last added object if items are added, otherwise -1
+*)
+METHOD PROTECTED _addRange : INT
+VAR_IN_OUT
+    items : ARRAY[*] OF POINTER TO Object;
+END_VAR
+VAR
+    _result : INT := -1;
+    _lowerBound : DINT;
+    _upperBound : DINT;
+    _itemsLength : DINT;
+    i : DINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_lowerBound := LOWER_BOUND(items,1);
+_upperBound := UPPER_BOUND(items,1);
+_itemsLength := _upperBound - _lowerBound;
+IF _itemsLength <= GetCapacity() - GetCount() THEN
+    FOR i := _lowerBound TO _upperBound DO
+        _addItem(items[i]^);
+	END_FOR
+    _result := DINT_TO_INT(GetCount() - 1);
+END_IF
+
+_addRange := _result;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_contains" Id="{d07ae6d6-3ac3-4fe7-b31b-c1fb787cf252}">
+      <Declaration><![CDATA[(*
+Purpose: Determines whether an element is in the List
+Parameters: item:Object, The object to locate in the List
+Return: BOOL, True if item is found in the List, otherwise False
+*)
+METHOD PROTECTED _contains : BOOL
+VAR_IN_OUT
+    item : Object;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _currentItem : POINTER TO Object;
+    _result : BOOL := False;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 THEN
+    _lastIndex := GetCount() - 1;
+    FOR i:=0 TO _lastIndex DO
+        _currentItem := GetItemAsIEquatable(i);
+        IF _currentItem^.Equals(item) THEN
+            _result := TRUE;
+            EXIT;
+        END_IF
+    END_FOR
+END_IF
+
+_contains := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_exists" Id="{47c64d9f-ef89-4237-9d34-f2ab98886f8c}">
+      <Declaration><![CDATA[(*
+Purpose: Determines whether the List contains elements that match the condition defined by the specified predicate
+Parameters: predicate:IPredicate, The Predicate delegate that defines the conditions of the elements to search for; evaluateCaseNumber:INT, Number that specifies which condition to evaluate
+Return: BOOL, True if the List contains one or more elements that match the condition defined by the specified predicate, otherwise False
+*)
+METHOD PROTECTED _exists : BOOL
+VAR_INPUT
+    predicate : I_Predicate;
+    evaluateCaseNumber : INT;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _currentItem : POINTER TO Object;
+    _result : BOOL := FALSE;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 THEN
+    _lastIndex := GetCount() - 1;
+    FOR i:=0 TO _lastIndex DO
+        _currentItem := GetItemAsIEquatable(i);
+        IF predicate.Evaluate(evaluateCaseNumber, _currentItem) THEN
+            _result := TRUE;
+            EXIT;
+        END_IF
+    END_FOR
+END_IF
+
+_exists := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_find" Id="{b0b5b3d7-cd76-4ad6-ac1c-2e3b09939015}">
+      <Declaration><![CDATA[(*
+Purpose: Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire List
+Parameters: predicate:IPredicate, The Predicate delegate that defines the conditions of the elements to search for; evaluateCaseNumber:INT, Number that specifies which condition to evaluate
+Return: POINTER TO Object, The address of the first element that matches the conditions defined by the specified predicate if found, otherwise 0
+*)
+METHOD PROTECTED _find : POINTER TO Object
+VAR_INPUT
+    predicate : I_Predicate;
+    evaluateCaseNumber : INT;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _currentItem : POINTER TO Object;
+    _result : POINTER TO Object := 0;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 THEN
+    _lastIndex := GetCount() - 1;
+    FOR i:=0 TO _lastIndex DO
+        _currentItem := GetItemAsIEquatable(i);
+        IF predicate.Evaluate(evaluateCaseNumber, _currentItem) THEN
+            _result := _currentItem;
+            EXIT;
+        END_IF
+    END_FOR
+END_IF
+
+_find := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_findAll" Id="{527b3398-e1fa-49d7-a229-5a8f784d6701}">
+      <Declaration><![CDATA[(*
+Purpose: Retrieves all the elements that match the conditions defined by the specified predicate
+Parameters: predicate:IPredicate, The Predicate delegate that defines the conditions of the elements to search for; evaluateCaseNumber:INT, Number that specifies which condition to evaluate
+Return: List, A List containing all the elements that match the conditions defined by the specified predicate if found, otherwise an empty List
+*)
+METHOD PROTECTED _findAll : List
+VAR_INPUT
+    predicate : I_Predicate;
+    evaluateCaseNumber : INT;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _currentItem : POINTER TO Object;
+    _result : List;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 THEN
+    _lastIndex := GetCount() - 1;
+    FOR i:=0 TO _lastIndex DO
+        _currentItem := GetItemAsIEquatable(i);
+        IF predicate.Evaluate(evaluateCaseNumber, _currentItem) THEN
+            _result._addItem(_currentItem^);
+        END_IF
+    END_FOR
+END_IF
+
+_findAll := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_findIndex" Id="{da446861-b56d-47b0-be00-c33d5c305aef}">
+      <Declaration><![CDATA[(*
+Purpose: Searches for an element that matches the conditions defined by a specified predicate and returns the zero-based index of the first occurrence within the List
+Parameters: predicate:IPredicate, The Predicate delegate that defines the conditions of the elements to search for; evaluateCaseNumber:INT, Number that specifies which condition to evaluate
+Return: INT, The zero-based index of the first occurrence of an element that matches the conditions defined by match if found, otherwise -1.
+*)
+METHOD PROTECTED _findIndex : INT
+VAR_INPUT
+    predicate : I_Predicate;
+    evaluateCaseNumber : INT;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _currentItem : POINTER TO Object;
+    _result : INT := -1;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 THEN
+    _lastIndex := GetCount() - 1;
+    FOR i:=0 TO _lastIndex DO
+        _currentItem := GetItemAsIEquatable(i);
+        IF predicate.Evaluate(evaluateCaseNumber, _currentItem) THEN
+            _result := i;
+            EXIT;
+        END_IF
+    END_FOR
+END_IF
+
+_findIndex := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_findLast" Id="{65e95bd1-8a9b-43fb-a841-0bd7fb8a3dd7}">
+      <Declaration><![CDATA[(*
+Purpose: Searches for an element that matches the conditions defined by the specified predicate, and returns the last occurrence within the entire List
+Parameters: predicate:IPredicate, The Predicate delegate that defines the conditions of the elements to search for; evaluateCaseNumber:INT, Number that specifies which condition to evaluate
+Return: POINTER TO Object, The address of the last element that matches the conditions defined by the specified predicate if found, otherwise 0
+*)
+METHOD PROTECTED _findLast : POINTER TO Object
+VAR_INPUT
+    predicate : I_Predicate;
+    evaluateCaseNumber : INT;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _currentItem : POINTER TO Object;
+    _result : POINTER TO Object := 0;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 THEN
+    _lastIndex := GetCount() - 1;
+    FOR i:=0 TO _lastIndex DO
+        _currentItem := GetItemAsIEquatable(_lastIndex - i);
+        IF predicate.Evaluate(evaluateCaseNumber, _currentItem) THEN
+            _result := _currentItem;
+            EXIT;
+        END_IF
+    END_FOR
+END_IF
+
+_findLast := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_findLastIndex" Id="{d39724a7-3d6d-43e5-8830-a5369f28681e}">
+      <Declaration><![CDATA[(*
+Purpose: Searches for an element that matches the conditions defined by a specified predicate and returns the zero-based index of the last occurrence within the List
+Parameters: predicate:IPredicate, The Predicate delegate that defines the conditions of the elements to search for; evaluateCaseNumber:INT, Number that specifies which condition to evaluate
+Return: INT, The zero-based index of the last occurrence of an element that matches the conditions defined by match if found, otherwise -1.
+*)
+METHOD PROTECTED _findLastIndex : INT
+VAR_INPUT
+    predicate : I_Predicate;
+    evaluateCaseNumber : INT;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _currentItem : POINTER TO Object;
+    _result : INT := -1;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 THEN
+    _lastIndex := GetCount() - 1;
+    FOR i:=0 TO _lastIndex DO
+        _currentItem := GetItemAsIEquatable(_lastIndex - i);
+        IF predicate.Evaluate(evaluateCaseNumber, _currentItem) THEN
+            _result := i;
+            EXIT;
+        END_IF
+    END_FOR
+END_IF
+
+_findLastIndex := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_forEach" Id="{0f207d66-1f53-47c4-ae01-b15ef5c3113b}">
+      <Declaration><![CDATA[(*
+Purpose: Performs the specified action on each element of the List
+Parameters: _action:IAction, The Action delegate to perform on each element of the List; performCaseNumber:INT, Number that specifies which action to perform
+Return: BOOL, True if the action is performed on all elements, otherwise False
+*)
+METHOD PROTECTED _forEach : BOOL
+VAR_INPUT
+    _action : I_Action;
+    performCaseNumber : INT;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _currentItem : POINTER TO Object;
+    ex : __SYSTEM.ExceptionCode;
+    _result : BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//__TRY  (*not supported on x64 systems*)
+    IF GetCount() > 0 THEN
+        _lastIndex := GetCount() - 1;
+        FOR i:=0 TO _lastIndex DO
+            _currentItem := GetItemAsIEquatable(i);
+            _action.Perform(performCaseNumber, _currentItem);
+        END_FOR
+        _result := TRUE;
+    END_IF
+//__CATCH(ex)
+//    _result := FALSE;
+//__ENDTRY
+
+_forEach := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_getRange" Id="{349a9b26-ed27-4023-acfe-5010cd24fe45}">
+      <Declaration><![CDATA[(*
+Purpose: Creates a shallow copy of a range of elements in the source List
+Parameters: index:INT, The zero-based List index at which the range starts; count:INT, The number of elements in the range
+Return: List, A shallow copy of a range of elements in the source List
+*)
+METHOD PROTECTED _getRange : List
+VAR_INPUT
+    index : INT;
+    count : INT;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _lastIndexToGet : INT;
+    _currentItem : POINTER TO Object;
+    _result : List;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 AND_THEN index >= 0 AND_THEN count > 0 THEN
+    _lastIndex := GetCount() - 1;
+    IF index <= _lastIndex THEN
+        _lastIndexToGet := index + count - 1;
+        IF _lastIndexToGet > _lastIndex THEN
+            _lastIndexToGet := _lastIndex;
+        END_IF
+        FOR i := index TO _lastIndexToGet DO
+            _currentItem := GetItemAsIEquatable(i);
+            _result._addItem(_currentItem^);
+        END_FOR
+    END_IF
+END_IF
+
+_getRange := _result;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_indexOf" Id="{e1c2fdc0-3a90-4fac-98c6-5cb7e6e57c7e}">
+      <Declaration><![CDATA[(*
+Purpose: Returns the zero-based index of the first occurrence in the List
+Parameters: item:Object, The object to locate in the List
+Return: INT, The zero-based index of the first occurrence of item in the List if found, otherwise -1
+*)
+METHOD PROTECTED _indexOf : INT
+VAR_IN_OUT
+    item : Object;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _currentItem : POINTER TO Object;
+    _result : INT := -1;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 THEN
+    _lastIndex := GetCount() - 1;
+    FOR i:=0 TO _lastIndex DO
+        _currentItem := GetItemAsIEquatable(i);
+        IF _currentItem^.Equals(item) THEN
+            _result := i;
+            EXIT;
+        END_IF
+    END_FOR
+END_IF
+
+_indexOf := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_initialize" Id="{e2fb8f48-d8d5-4693-a6ec-4534a4158682}">
+      <Declaration><![CDATA[(*
+Purpose: Initializes the List by copying the specified array
+Parameters: items:ARRAY[*] OF POINTER TO Object, The array whose elements are copied to the new list
+Return: INT, The zero-based index of the last copied element if input array length is less or equal to length of the list, otherwise -1
+*)
+METHOD PROTECTED _initialize : INT
+VAR_IN_OUT
+    items : ARRAY[*] OF POINTER TO Object;
+END_VAR
+VAR
+    _result : INT := -1;
+    _lowerBound : DINT;
+    _upperBound : DINT;
+    _itemsLength : DINT;
+    i : DINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_lowerBound := LOWER_BOUND(items,1);
+_upperBound := UPPER_BOUND(items,1);
+_itemsLength := _upperBound - _lowerBound;
+IF _itemsLength <= GetCapacity() THEN
+    Clear();
+    _result := _addRange(items);
+END_IF
+
+_initialize := _result;
+
+
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_insert" Id="{cfaaa331-b74e-4eea-947f-494ac7c04acd}">
+      <Declaration><![CDATA[(*
+Purpose: Inserts the address of the Object at the specified index
+Parameters: index:INT ,The zero-based index at which the new object should be inserted; item:Object, The object to insert
+Return: INT, The zero-based index of the inserted object if inserted, otherwise -1
+*)
+METHOD PROTECTED _insert : INT
+VAR_INPUT
+    index : INT;
+END_VAR
+VAR_IN_OUT
+    item : Object;
+END_VAR
+VAR
+    i : INT;
+    _result : INT := -1;
+    count : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[count := GetCount();
+IF count <= GVL.LIST_UPPER_BOUND AND index >= 0 THEN
+    IF index >= count THEN
+        _result := _addItem(item);
+    ELSE
+        FOR i:=0 TO count - index - 1 DO
+            _internalArray[count - i] := _internalArray[count - i - 1];
+		END_FOR
+        _internalArray[index] := ADR(item);
+        _count := _count + 1;
+        _result := index;
+	END_IF
+END_IF
+
+_insert := _result;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_insertRange" Id="{3dd46b98-f291-4ea9-9b34-5074da286348}">
+      <Declaration><![CDATA[(*
+Purpose: Inserts the address of the elements of the specified array at the specified index
+Parameters: index:INT ,The zero-based index at which the new elements should be inserted; items:ARRAY[*] OF POINTER TO Object, The array whose elements should be inserted into the List
+Return: INT, The zero-based index of the last inserted object if input array length is less or equal to remaining capacity of the list, otherwise -1
+*)
+METHOD PROTECTED _insertRange : INT
+VAR_INPUT
+    index : INT;
+END_VAR
+VAR_IN_OUT
+    items : ARRAY[*] OF POINTER TO Object;
+END_VAR
+VAR
+    _result : INT := -1;
+    _lowerBound : DINT;
+    _upperBound : DINT;
+    _itemsLength : DINT;
+    i : DINT;
+    j : INT := 0;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF index >= 0 THEN
+    _lowerBound := LOWER_BOUND(items,1);
+    _upperBound := UPPER_BOUND(items,1);
+    _itemsLength := _upperBound - _lowerBound;
+    IF _itemsLength <= GetCapacity() - GetCount() THEN
+        FOR i := _lowerBound TO _upperBound DO
+            _result := _insert(index + j, items[i]^);
+            j := j + 1;
+        END_FOR
+    END_IF
+END_IF
+
+_insertRange := _result;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_lastIndexOf" Id="{977c0553-d312-46ac-8b6d-e9b1f673d709}">
+      <Declaration><![CDATA[(*
+Purpose: Returns the zero-based index of the last occurrence in the List
+Parameters: item:Object, The object to locate in the List
+Return: INT, The zero-based index of the last occurrence of item in the List if found, otherwise -1
+*)
+METHOD PROTECTED _lastIndexOf : INT
+VAR_IN_OUT
+    item : Object;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _currentItem : POINTER TO Object;
+    _result : INT := -1;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 THEN
+    _lastIndex := GetCount() - 1;
+    FOR i:=0 TO _lastIndex DO
+        _currentItem := GetItemAsIEquatable(_lastIndex - i);
+        IF _currentItem^.Equals(item) THEN
+            _result := _lastIndex - i;
+            EXIT;
+        END_IF
+    END_FOR
+END_IF
+
+_lastIndexOf := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_remove" Id="{b671cc8a-e2b3-42dc-8036-59eb0749ebde}">
+      <Declaration><![CDATA[(*
+Purpose: Removes the address of the first occurrence of a specific object from the List
+Parameters: item:Object, The object to remove from the List
+Return: BOOL, True if item is successfully removed, otherwise False
+*)
+METHOD PROTECTED _remove : BOOL
+VAR_IN_OUT
+    item : Object;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _currentItem : POINTER TO Object;
+    _result : BOOL := FALSE;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 THEN
+    _lastIndex := GetCount() - 1;
+    FOR i:=0 TO _lastIndex DO
+        _currentItem := GetItemAsIEquatable(i);
+        IF _currentItem^.Equals(item) THEN
+            _result := RemoveAt(i);
+            EXIT;
+        END_IF
+    END_FOR
+END_IF
+
+_remove := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_removeAll" Id="{7cb3681e-d8ca-45d1-a923-4fc8e687fb11}">
+      <Declaration><![CDATA[(*
+Purpose: Removes all the elements that match the conditions defined by the specified predicate
+Parameters: predicate:IPredicate, The Predicate delegate that defines the conditions of the elements to search for; evaluateCaseNumber:INT, Number that specifies which condition to evaluate
+Return: INT, The number of elements removed from the List
+*)
+METHOD PROTECTED _removeAll : INT
+VAR_INPUT
+    predicate : I_Predicate;
+    evaluateCaseNumber : INT;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _currentItem : POINTER TO Object;
+    _result : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 THEN
+    _lastIndex := GetCount() - 1;
+    FOR i:=0 TO _lastIndex DO
+        _currentItem := GetItemAsIEquatable(i);
+        IF predicate.Evaluate(evaluateCaseNumber, _currentItem) THEN
+            _remove(_currentItem^);
+            i := i - 1;
+            _lastIndex := _lastIndex - 1;
+            _result := _result + 1;
+        END_IF
+    END_FOR
+END_IF
+
+_removeAll := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_toArray" Id="{fc499c66-51ed-4d8e-8099-a60ec9996f0d}">
+      <Declaration><![CDATA[(*
+Purpose: Copies the elements of the List to a new array
+Return: ARRAY[0..GVL.LIST_UPPER_BOUND] OF POINTER TO IEquatable, An array containing copies of the elements of the List as IEquatable
+*)
+METHOD PROTECTED _toArray : ARRAY[0..GVL.LIST_UPPER_BOUND] OF POINTER TO I_Equatable
+VAR
+    i : INT;
+    count : INT;
+    _result : ARRAY[0..GVL.LIST_UPPER_BOUND] OF POINTER TO I_Equatable;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[count := GetCount();
+IF count > 0 THEN
+    FOR i:=0 TO count - 1 DO
+        _result[i] := GVL.CastHelper.AddressToI_Equatable(_internalArray[i]);
+    END_FOR
+END_IF
+
+_toArray := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Clear" Id="{e256ed3c-5d12-4f87-962d-ecaaa04c09e7}">
+      <Declaration><![CDATA[(*
+Purpose: Removes all elements from the List
+*)
+METHOD PUBLIC Clear
+VAR
+    i : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 THEN
+    FOR i:= 0 TO GetCount()-1 DO
+        _internalArray[i] := 0;
+    END_FOR
+    _count := 0;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetCapacity" Id="{c196eeb0-ad3d-46c4-b767-5dfdf73f471e}">
+      <Declaration><![CDATA[(*
+Purpose: Gets the total number of elements the internal array can hold
+Return: INT, The number of elements that the List can contain
+*)
+METHOD PUBLIC GetCapacity : INT
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[GetCapacity := GVL.LIST_UPPER_BOUND + 1;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetCount" Id="{8cd9cdb0-0235-4e61-b942-437b1310fc7a}">
+      <Declaration><![CDATA[(*
+Purpose: Gets the number of elements contained in the List
+Return: INT, The number of elements contained in the List
+*)
+METHOD PUBLIC GetCount : INT
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[GetCount := _count;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetItemAsIEquatable" Id="{bd83e832-c915-4b4c-917e-b9651d7b3121}">
+      <Declaration><![CDATA[(*
+Purpose: Gets the element at the specified index
+Parameters: index:INT, The zero-based index of the element to get
+Return: POINTER TO IEquatable, The element at the specified index
+*)
+METHOD PUBLIC GetItemAsIEquatable : POINTER TO I_Equatable
+VAR_INPUT
+    index : INT;
+END_VAR
+
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() = 0 OR_ELSE index < 0 OR_ELSE index >= _count THEN
+    GetItemAsIEquatable := 0;
+ELSE
+    GetItemAsIEquatable := GVL.CastHelper.AddressToI_Equatable(_internalArray[index]);
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RemoveAt" Id="{30907b66-4680-46cd-9392-b7da225163a3}">
+      <Declaration><![CDATA[(*
+Purpose: Removes the element at the specified index of the List
+Parameters: index:INT, The zero-based index of the element to remove
+Return: BOOL, True if the element is removed, otherwise False
+*)
+METHOD PUBLIC RemoveAt : BOOL
+VAR_INPUT
+    index : INT;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _result : BOOL := FALSE;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 AND_THEN index >= 0 THEN
+    _lastIndex := GetCount() - 1;
+    IF index <= _lastIndex THEN
+        FOR i := index TO _lastIndex - 1 DO
+            _internalArray[i] := _internalArray[i + 1];
+        END_FOR
+        _internalArray[_lastIndex] := 0;
+        _count := GetCount() - 1;
+        _result := TRUE;
+    END_IF
+END_IF
+
+RemoveAt := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RemoveRange" Id="{19257631-3e99-4c88-a880-095c81e181b9}">
+      <Declaration><![CDATA[(*
+Purpose: Removes a range of elements from the List
+Parameters: index:INT, The zero-based starting index of the range of elements to remove; count:INT, The number of elements to remove
+Return: BOOL, True if the last element is removed, otherwise False
+*)
+METHOD PUBLIC RemoveRange : BOOL
+VAR_INPUT
+    index : INT;
+    count : INT;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _lastIndexToRemove : INT;
+    _result : BOOL := FALSE;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 AND_THEN index >= 0 AND_THEN count > 0 THEN
+    _lastIndex := GetCount() - 1;
+    IF index <= _lastIndex THEN
+        _lastIndexToRemove := index + count - 1;
+        IF _lastIndexToRemove > _lastIndex THEN
+            _lastIndexToRemove := _lastIndex;
+        END_IF
+        FOR i := index TO _lastIndexToRemove DO
+            _result := RemoveAt(index);
+        END_FOR
+    END_IF
+END_IF
+
+RemoveRange := _result;]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

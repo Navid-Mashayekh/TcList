@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <Itf Name="I_Equatable" Id="{c7ba4731-96e2-412c-9ddc-66264bc88e7c}">
+    <Declaration><![CDATA[INTERFACE I_Equatable EXTENDS __System.IQueryInterface
+]]></Declaration>
+    <Method Name="Equals" Id="{b6ac8448-f05e-4aa1-bd0e-431255da418a}">
+      <Declaration><![CDATA[METHOD Equals : BOOL
+VAR_INPUT
+    other : I_Equatable;
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

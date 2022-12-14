@@ -1,0 +1,416 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="List_I_Observer_" Id="{39aee508-d65d-4da3-b6d4-542a82984bac}" SpecialFunc="None">
+    <Declaration><![CDATA[(*
+Sample List which has all available functionalities for an Interface typed inputs.
+For instance this is a list of type I_Observer (C# eq: List<I_Observer>).
+To have any desired type (Interface) make a copy of this FB and change I_Observer to your interface in all methods
+*)
+FUNCTION_BLOCK List_I_Observer_
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+    _internalArray : ARRAY [0..GVL.LIST_UPPER_BOUND] OF I_Observer;
+    _count : INT := 0;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="AddItem" Id="{1647ff83-97e2-435a-9729-5de89cf5ec24}">
+      <Declaration><![CDATA[(*
+Purpose: Adds an object to the end of the List
+Parameters: item:{Implements I_X}, The object to be added to the end of the List
+Return: INT, The zero-based index of added object if item is added, otherwise -1
+*)
+METHOD PUBLIC AddItem : INT
+VAR_INPUT
+    item : I_Observer;
+END_VAR
+VAR
+    _result : INT := -1;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() <= GVL.LIST_UPPER_BOUND THEN
+    _internalArray[_count] := item;
+    _result := _count;
+    _count := _count + 1;
+END_IF
+AddItem := _result;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Clear" Id="{3bc5c02c-4f00-4a8f-8566-2cf12605e3ea}">
+      <Declaration><![CDATA[(*
+Purpose: Removes all elements from the List
+*)
+METHOD PUBLIC Clear
+VAR
+    i : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 THEN
+    FOR i:= 0 TO GetCount()-1 DO
+        _internalArray[i] := 0;
+    END_FOR
+    _count := 0;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Contains" Id="{f49d5d01-be0e-4e66-aed0-3d4ed6b3fedf}">
+      <Declaration><![CDATA[(*
+Purpose: Determines whether an element is in the List
+Parameters: item:{Implements I_X}, The object to locate in the List
+Return: BOOL, True if item is found in the List, otherwise False
+*)
+METHOD PUBLIC Contains : BOOL
+VAR_INPUT
+    item : I_Observer;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _currentItem : I_Observer;
+    _result : BOOL := False;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 THEN
+    _lastIndex := GetCount() - 1;
+    FOR i:=0 TO _lastIndex DO
+        _currentItem := GetItem(i);
+        IF _currentItem = item THEN
+            _result := TRUE;
+            EXIT;
+        END_IF
+    END_FOR
+END_IF
+
+Contains := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ForEach" Id="{14c89315-594e-4f12-a21c-07983240bcb3}">
+      <Declaration><![CDATA[(*
+Purpose: Performs the specified action on each element of the List
+Parameters: _action:{Action_I_X_ Implements IAction}, The Action delegate to perform on each element of the List; performCaseNumber:INT, Number that specifies which action to perform
+Return: BOOL, True if the action is performed on all elements, otherwise False
+*)
+METHOD PUBLIC ForEach : BOOL
+VAR_INPUT
+    _action : Action_I_Observer_;
+    performCaseNumber : INT;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _currentItem : I_Observer;
+    ex : __SYSTEM.ExceptionCode;
+    _result : BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//__TRY  (*not supported on x64 systems*)
+    IF GetCount() > 0 THEN
+        _lastIndex := GetCount() - 1;
+        FOR i:=0 TO _lastIndex DO
+            _currentItem := GetItem(i);
+            _action.Perform(performCaseNumber, _currentItem);
+        END_FOR
+        _result := TRUE;
+    END_IF
+//__CATCH(ex)
+//    _result := FALSE;
+//__ENDTRY
+
+ForEach := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetCapacity" Id="{d5c0daa6-a3cd-4a58-8af7-a782e1a922ca}">
+      <Declaration><![CDATA[(*
+Purpose: Gets the total number of elements the internal array can hold
+Return: INT, The number of elements that the List can contain
+*)
+METHOD PUBLIC GetCapacity : INT
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[GetCapacity := GVL.LIST_UPPER_BOUND + 1;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetCount" Id="{f5efe866-fe81-4056-85f2-286450f2e966}">
+      <Declaration><![CDATA[(*
+Purpose: Gets the number of elements contained in the List
+Return: INT, The number of elements contained in the List
+*)
+METHOD PUBLIC GetCount : INT
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[GetCount := _count;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetItem" Id="{9f4db912-cf55-479f-b6e9-f2d344f9cda8}">
+      <Declaration><![CDATA[(*
+Purpose: Gets the element at the specified index
+Parameters: index:INT, The zero-based index of the element to get
+Return: {Implements I_X}, The element at the specified index
+*)
+METHOD PUBLIC GetItem : I_Observer
+VAR_INPUT
+    index : INT;
+END_VAR
+
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() = 0 OR_ELSE index < 0 OR_ELSE index >= _count THEN
+    GetItem := 0;
+ELSE
+    GetItem := _internalArray[index];
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetRange" Id="{78a06daa-e7ad-49ac-aa4e-752d50608ff8}">
+      <Declaration><![CDATA[(*
+Purpose: Creates a shallow copy of a range of elements in the source List
+Parameters: index:INT, The zero-based List index at which the range starts; count:INT, The number of elements in the range
+Return: List_I_X_, A shallow copy of a range of elements in the source List
+*)
+METHOD PUBLIC GetRange : List_I_Observer_
+VAR_INPUT
+    index : INT;
+    count : INT;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _lastIndexToGet : INT;
+    _currentItem : I_Observer;
+    _result : List_I_Observer_;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 AND_THEN index >= 0 AND_THEN count > 0 THEN
+    _lastIndex := GetCount() - 1;
+    IF index <= _lastIndex THEN
+        _lastIndexToGet := index + count - 1;
+        IF _lastIndexToGet > _lastIndex THEN
+            _lastIndexToGet := _lastIndex;
+        END_IF
+        FOR i := index TO _lastIndexToGet DO
+            _currentItem := GetItem(i);
+            _result.AddItem(_currentItem);
+        END_FOR
+    END_IF
+END_IF
+
+GetRange := _result;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="IndexOfItem" Id="{1f7f8037-5d64-417f-a591-e317854af8ec}">
+      <Declaration><![CDATA[(*
+Purpose: Returns the zero-based index of the first occurrence in the List
+Parameters: item:{Implements I_X}, The object to locate in the List
+Return: INT, The zero-based index of the first occurrence of item in the List if found, otherwise -1
+*)
+METHOD PUBLIC IndexOfItem : INT
+VAR_INPUT
+    item : I_Observer;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _currentItem : I_Observer;
+    _result : INT := -1;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 THEN
+    _lastIndex := GetCount() - 1;
+    FOR i:=0 TO _lastIndex DO
+        _currentItem := GetItem(i);
+        IF _currentItem = item THEN
+            _result := i;
+            EXIT;
+        END_IF
+    END_FOR
+END_IF
+
+IndexOfItem := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Insert" Id="{46d3ec20-2f69-494a-bd0e-0472c963f99e}">
+      <Declaration><![CDATA[(*
+Purpose: Inserts an item at the specified index
+Parameters: index:INT ,The zero-based index at which the new object should be inserted; item:{Implements I_X}, The object to insert
+Return: INT, The zero-based index of the inserted object if inserted, otherwise -1
+*)
+METHOD PUBLIC Insert : INT
+VAR_INPUT
+    index : INT;
+    item : I_Observer;
+END_VAR
+VAR
+    i : INT;
+    _result : INT := -1;
+    count : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[count := GetCount();
+IF count <= GVL.LIST_UPPER_BOUND AND index >= 0 THEN
+    IF index >= count THEN
+        _result := AddItem(item);
+    ELSE
+        FOR i:=0 TO count - index - 1 DO
+            _internalArray[count - i] := _internalArray[count - i - 1];
+		END_FOR
+        _internalArray[index] := item;
+        _count := _count + 1;
+        _result := index;
+	END_IF
+END_IF
+
+Insert := _result;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="LastIndexOf" Id="{23f4a429-ceb8-4ee7-a193-ca9e0095d590}">
+      <Declaration><![CDATA[(*
+Purpose: Returns the zero-based index of the last occurrence in the List
+Parameters: item:{Implements I_X}, The object to locate in the List
+Return: INT, The zero-based index of the last occurrence of item in the List if found, otherwise -1
+*)
+METHOD PUBLIC LastIndexOf : INT
+VAR_INPUT
+    item : I_Observer;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _currentItem : I_Observer;
+    _result : INT := -1;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 THEN
+    _lastIndex := GetCount() - 1;
+    FOR i:=0 TO _lastIndex DO
+        _currentItem := GetItem(_lastIndex - i);
+        IF _currentItem = item THEN
+            _result := _lastIndex - i;
+            EXIT;
+        END_IF
+    END_FOR
+END_IF
+
+LastIndexOf := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Remove" Id="{0b3ad9f2-7037-4158-8871-1f7fe940d888}">
+      <Declaration><![CDATA[(*
+Purpose: Removes the address of the first occurrence of a specific object from the List
+Parameters: item:{Implements I_X}, The object to remove from the List
+Return: BOOL, True if item is successfully removed, otherwise False
+*)
+METHOD PUBLIC Remove : BOOL
+VAR_INPUT
+    item : I_Observer;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _currentItem : I_Observer;
+    _result : BOOL := FALSE;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 THEN
+    _lastIndex := GetCount() - 1;
+    FOR i:=0 TO _lastIndex DO
+        _currentItem := GetItem(i);
+        IF _currentItem = item THEN
+            _result := RemoveAt(i);
+            EXIT;
+        END_IF
+    END_FOR
+END_IF
+
+Remove := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RemoveAt" Id="{1187b277-00df-4124-be87-0dfab32031bf}">
+      <Declaration><![CDATA[(*
+Purpose: Removes the element at the specified index of the List
+Parameters: index:INT, The zero-based index of the element to remove
+Return: BOOL, True if the element is removed, otherwise False
+*)
+METHOD PUBLIC RemoveAt : BOOL
+VAR_INPUT
+    index : INT;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _result : BOOL := FALSE;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 AND_THEN index >= 0 THEN
+    _lastIndex := GetCount() - 1;
+    IF index <= _lastIndex THEN
+        FOR i := index TO _lastIndex - 1 DO
+            _internalArray[i] := _internalArray[i + 1];
+        END_FOR
+        _internalArray[_lastIndex] := 0;
+        _count := GetCount() - 1;
+        _result := TRUE;
+    END_IF
+END_IF
+
+RemoveAt := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RemoveRange" Id="{88364b3f-0bda-45f8-8bca-d53bd78414bd}">
+      <Declaration><![CDATA[(*
+Purpose: Removes a range of elements from the List
+Parameters: index:INT, The zero-based starting index of the range of elements to remove; count:INT, The number of elements to remove
+Return: BOOL, True if the last element is removed, otherwise False
+*)
+METHOD PUBLIC RemoveRange : BOOL
+VAR_INPUT
+    index : INT;
+    count : INT;
+END_VAR
+VAR
+    i : INT;
+    _lastIndex : INT;
+    _lastIndexToRemove : INT;
+    _result : BOOL := FALSE;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCount() > 0 AND_THEN index >= 0 AND_THEN count > 0 THEN
+    _lastIndex := GetCount() - 1;
+    IF index <= _lastIndex THEN
+        _lastIndexToRemove := index + count - 1;
+        IF _lastIndexToRemove > _lastIndex THEN
+            _lastIndexToRemove := _lastIndex;
+        END_IF
+        FOR i := index TO _lastIndexToRemove DO
+            _result := RemoveAt(index);
+        END_FOR
+    END_IF
+END_IF
+
+RemoveRange := _result;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ToArray" Id="{e9fd1fe1-de4b-484a-a904-41c41e2d360b}">
+      <Declaration><![CDATA[(*
+Purpose: Copies the elements of the List to a new array
+Return: ARRAY[0..GVL.LIST_UPPER_BOUND] OF {Implements I_X}, An array containing copies of the elements of the List as {Implements I_X}
+*)
+METHOD ToArray : ARRAY[0..GVL.LIST_UPPER_BOUND] OF I_Observer]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[ToArray := _internalArray;]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="Action_I_Observer_" Id="{8a2bf32b-de93-4ece-9af4-43f93abc4c97}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FINAL Action_I_Observer_
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+]]></ST>
+    </Implementation>
+    <Method Name="Perform" Id="{01b2032b-41a7-42a3-8c6a-d654fad2b1f1}">
+      <Declaration><![CDATA[METHOD Perform
+VAR_INPUT
+    applyCaseNumber : INT;
+END_VAR
+VAR_IN_OUT
+	item : I_Observer;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE applyCaseNumber OF
+    1 :
+    item.OnUpdate();
+    2 :
+    item.OnError();
+ELSE
+    RETURN;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

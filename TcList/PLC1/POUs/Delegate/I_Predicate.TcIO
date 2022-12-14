@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <Itf Name="I_Predicate" Id="{b5753ae1-7c2d-4e25-aa57-7de6b240bbbe}">
+    <Declaration><![CDATA[INTERFACE I_Predicate
+]]></Declaration>
+    <Method Name="Evaluate" Id="{1f04e299-ca25-45de-9d32-65436dc67c8d}">
+      <Declaration><![CDATA[METHOD Evaluate : BOOL
+VAR_INPUT
+    evaluateCaseNumber : INT;
+END_VAR
+VAR_IN_OUT
+    item : POINTER TO Object;
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

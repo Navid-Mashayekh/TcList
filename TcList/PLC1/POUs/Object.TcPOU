@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="Object" Id="{2b6da8fb-7fd5-4e25-a1c2-57642bb958f5}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Object IMPLEMENTS I_Equatable
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="Equals" Id="{fde84281-486a-4bb7-9faa-bf5ab71da01a}">
+      <Declaration><![CDATA[METHOD Equals : BOOL
+VAR_INPUT
+    other : I_Equatable;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Equals := false;]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

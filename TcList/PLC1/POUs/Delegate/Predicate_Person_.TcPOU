@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="Predicate_Person_" Id="{4bd30a13-2d4e-4e4e-a9a6-9885fcae8daf}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FINAL Predicate_Person_ IMPLEMENTS I_Predicate
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+]]></ST>
+    </Implementation>
+    <Method Name="Evaluate" Id="{e45f646b-c15d-4c56-b530-df9ca901258a}">
+      <Declaration><![CDATA[METHOD Evaluate : BOOL
+VAR_INPUT
+    evaluateCaseNumber : INT;
+END_VAR
+VAR_IN_OUT
+	item : POINTER TO Object;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE evaluateCaseNumber OF
+    1 :
+    IF GVL.CastHelper.ObjectToPerson(item)^.GetAge() < 21 THEN
+        Evaluate := TRUE;
+    ELSE
+        Evaluate := FALSE;
+    END_IF
+    2 :
+    IF GVL.CastHelper.ObjectToPerson(item)^.GetName() = 'Navid' THEN
+        Evaluate := TRUE;
+    ELSE
+        Evaluate := FALSE;
+    END_IF
+ELSE
+    Evaluate := FALSE;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,332 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="List_Person_" Id="{f170b397-6de8-4b37-a966-33857d0ff017}" SpecialFunc="None">
+    <Declaration><![CDATA[(*
+Sample List which has all available functionalities.
+For instance this is a list of type Person (C# eq: List<Person>).
+To have any desired type (!!!Not Interface!!!) make a copy of this FB and change Person to your type in all methods
+*)
+FUNCTION_BLOCK FINAL List_Person_ EXTENDS List
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="AddItem" Id="{c46efce8-5fc4-456c-9d20-d884a735c1ac}">
+      <Declaration><![CDATA[(*
+Purpose: Adds an item to the end of the List
+Parameters: item:{X Extends Object}, The object to be added to the end of the List
+Return: INT, The zero-based index of added object if item is added, otherwise -1
+*)
+METHOD PUBLIC AddItem : INT
+VAR_IN_OUT
+    item : Person;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AddItem := SUPER^._addItem(item);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="AddRange" Id="{eb3b46c2-305c-4a9a-8ef8-308464360e2d}">
+      <Declaration><![CDATA[(*
+Purpose: Adds elements of the specified array to the end of the List
+Parameters: items:ARRAY[*] OF POINTER TO {X Extends Object}, The array whose elements should be added to the end of the List
+Return: INT, The zero-based index of the last added object if items are added, otherwise -1
+*)
+METHOD PUBLIC AddRange : INT
+VAR_IN_OUT
+    items : ARRAY[*] OF POINTER TO Person;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AddRange := SUPER^._addRange(items);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Contains" Id="{43142797-9fb6-4ca2-86d9-763624ffe95b}">
+      <Declaration><![CDATA[(*
+Purpose: Determines whether an element is in the List
+Parameters: item:{X Extends Object}, The object to locate in the List
+Return: BOOL, True if item is found in the List, otherwise False
+*)
+METHOD PUBLIC Contains : BOOL
+VAR_IN_OUT
+    item: Person;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Contains := SUPER^._contains(item);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Exists" Id="{f83c5569-9d84-47e5-8033-2c387a65ff4f}">
+      <Declaration><![CDATA[(*
+Purpose: Determines whether the List contains elements that match the condition defined by the specified predicate
+Parameters: predicate:{Predicate_X_ Implements IPredicate}, The Predicate delegate that defines the conditions of the elements to search for; evaluateCaseNumber:INT, Number that specifies which condition to evaluate
+Return: BOOL, True if the List contains one or more elements that match the condition defined by the specified predicate, otherwise False
+*)
+METHOD PUBLIC Exists : BOOL
+VAR_INPUT
+    predicate: Predicate_Person_;
+    evaluateCaseNumber : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Exists := SUPER^._exists(predicate, evaluateCaseNumber);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Find" Id="{8e6ddf8e-c61e-4f96-b71f-070beab61413}">
+      <Declaration><![CDATA[(*
+Purpose: Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire List
+Parameters: predicate:{Predicate_X_ Implements IPredicate}, The Predicate delegate that defines the conditions of the elements to search for; evaluateCaseNumber:INT, Number that specifies which condition to evaluate
+Return: POINTER TO {X Extends Object}, The address of the first element that matches the conditions defined by the specified predicate if found, otherwise 0
+*)
+METHOD Find : POINTER TO Person
+VAR_INPUT
+    predicate: Predicate_Person_;
+    evaluateCaseNumber : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Find := SUPER^._find(predicate, evaluateCaseNumber);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FindAll" Id="{ad0d6bbd-aff4-402a-aa7f-40a41acc6095}">
+      <Declaration><![CDATA[(*
+Purpose: Retrieves all the elements that match the conditions defined by the specified predicate
+Parameters: predicate:{Predicate_X_ Implements IPredicate}, The Predicate delegate that defines the conditions of the elements to search for; evaluateCaseNumber:INT, Number that specifies which condition to evaluate
+Return: {List_X_ Extends List}, A List containing all the elements that match the conditions defined by the specified predicate if found, otherwise an empty List
+*)
+METHOD FindAll: List_Person_
+VAR_INPUT
+    predicate: Predicate_Person_;
+    evaluateCaseNumber : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FindAll := GVL.CastHelper.ListToList_Person_(SUPER^._findAll(predicate, evaluateCaseNumber));]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FindIndex" Id="{b8ebc9ae-75ed-421a-b75a-3667fb759334}">
+      <Declaration><![CDATA[(*
+Purpose: Searches for an element that matches the conditions defined by a specified predicate and returns the zero-based index of the first occurrence within the List
+Parameters: predicate:{Predicate_X_ Implements IPredicate}, The Predicate delegate that defines the conditions of the elements to search for; evaluateCaseNumber:INT, Number that specifies which condition to evaluate
+Return: INT, The zero-based index of the first occurrence of an element that matches the conditions defined by match if found, otherwise -1.
+*)
+METHOD FindIndex : INT
+VAR_INPUT
+    predicate: Predicate_Person_;
+    evaluateCaseNumber : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FindIndex := SUPER^._findIndex(predicate, evaluateCaseNumber);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FindLast" Id="{980af20c-3eee-4831-96eb-ff15326e6663}">
+      <Declaration><![CDATA[(*
+Purpose: Searches for an element that matches the conditions defined by the specified predicate, and returns the last occurrence within the entire List
+Parameters: predicate:{X Implements IPredicate}, The Predicate delegate that defines the conditions of the elements to search for; evaluateCaseNumber:INT, Number that specifies which condition to evaluate
+Return: POINTER TO {X Extends Object}, The address of the last element that matches the conditions defined by the specified predicate if found, otherwise 0
+*)
+METHOD FindLast : POINTER TO Person
+VAR_INPUT
+    predicate: Predicate_Person_;
+    evaluateCaseNumber : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FindLast := SUPER^._findLast(predicate, evaluateCaseNumber);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FindLastIndex" Id="{c66ec162-2cb5-42f3-aa4e-7347fd907111}">
+      <Declaration><![CDATA[(*
+Purpose: Searches for an element that matches the conditions defined by a specified predicate and returns the zero-based index of the last occurrence within the List
+Parameters: predicate:{X Implements IPredicate}, The Predicate delegate that defines the conditions of the elements to search for; evaluateCaseNumber:INT, Number that specifies which condition to evaluate
+Return: INT, The zero-based index of the last occurrence of an element that matches the conditions defined by match if found, otherwise -1.
+*)
+METHOD FindLastIndex : INT
+VAR_INPUT
+    predicate: Predicate_Person_;
+    evaluateCaseNumber : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FindLastIndex := SUPER^._findLastIndex(predicate, evaluateCaseNumber);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Foreach" Id="{7649d235-090a-4a53-8597-7343b27d6b89}">
+      <Declaration><![CDATA[(*
+Purpose: Performs the specified action on each element of the List
+Parameters: _action:{Action_X_ Implements IAction}, The Action delegate to perform on each element of the List; performCaseNumber:INT, Number that specifies which action to perform
+Return: BOOL, True if the action is performed on all elements, otherwise False
+*)
+METHOD Foreach: BOOL
+VAR_INPUT
+    _action : I_Action;
+    performCaseNumber : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Foreach := SUPER^._forEach(_action, performCaseNumber);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetItem" Id="{1aa51480-e25f-4948-8e5d-358ba3edb9f3}">
+      <Declaration><![CDATA[(*
+Purpose: Gets the element at the specified index
+Parameters: index:INT, The zero-based index of the element to get
+Return: POINTER TO {X Extends Object}, The element at the specified index
+*)
+METHOD PUBLIC GetItem : POINTER TO Person
+VAR_INPUT
+    index : INT;
+END_VAR
+
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[GetItem := SUPER^.GetItemAsIEquatable(index);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetRange" Id="{6d6232a3-e301-44e7-acc4-3ebf423f1c88}">
+      <Declaration><![CDATA[(*
+Purpose: Creates a shallow copy of a range of elements in the source List
+Parameters: index:INT, The zero-based List index at which the range starts; count:INT, The number of elements in the range
+Return: {List_X_ Extends List}, A shallow copy of a range of elements in the source List
+*)
+METHOD PUBLIC GetRange: List_Person_
+VAR_INPUT
+    index : INT;
+    count : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[GetRange := GVL.CastHelper.ListToList_Person_(SUPER^._getRange(index, count));]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="IndexOfItem" Id="{b038c623-d845-4b50-aa13-1e8c4dd22a6b}">
+      <Declaration><![CDATA[(*
+Purpose: Returns the zero-based index of the first occurrence in the List
+Parameters: item:{X Extends Object}, The object to locate in the List
+Return: INT, The zero-based index of the first occurrence of item in the List if found, otherwise -1
+*)
+METHOD PUBLIC IndexOfItem : INT
+VAR_IN_OUT
+    item: Person;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IndexOfItem := SUPER^._indexOf(item);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{14efefc7-c665-4ba4-a311-ae3c0dd2d3d1}">
+      <Declaration><![CDATA[(*
+Purpose: Initializes the List by copying the specified array
+Parameters: items:ARRAY[*] OF POINTER TO {X Extends Object}, The array whose elements are copied to the new list
+Return: INT, The zero-based index of the last copied element if input array length is less or equal to length of the list, otherwise -1
+*)
+METHOD PUBLIC Initialize : INT
+VAR_IN_OUT
+    items : ARRAY[*] OF POINTER TO Person;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Initialize := _initialize(items);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Insert" Id="{5444f6d4-c096-401d-940c-af5fefdafac4}">
+      <Declaration><![CDATA[(*
+Purpose: Inserts an item at the specified index
+Parameters: index:INT ,The zero-based index at which the new object should be inserted; item:{X Extends Object}, The object to insert
+Return: INT, The zero-based index of the inserted object if inserted, otherwise -1
+*)
+METHOD PUBLIC Insert : INT
+VAR_INPUT
+    index : INT;
+END_VAR
+VAR_IN_OUT
+    item : Person;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Insert := SUPER^._insert(index, item);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="InsertRange" Id="{1f975c80-efa1-46db-b43d-37ea425cc1c7}">
+      <Declaration><![CDATA[(*
+Purpose: Inserts elements of the specified array at the specified index
+Parameters: index:INT ,The zero-based index at which the new elements should be inserted; items:ARRAY[*] OF POINTER TO {X Extends Object}, The array whose elements should be inserted into the List
+Return: INT, The zero-based index of the last inserted object if input array length is less or equal to remaining capacity of the list, otherwise -1
+*)
+METHOD PUBLIC InsertRange : INT
+VAR_INPUT
+    index : INT;
+END_VAR
+VAR_IN_OUT
+    items : ARRAY[*] OF POINTER TO Person;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[InsertRange := SUPER^._insertRange(index, items);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="LastIndexOfItem" Id="{b5f3e2cc-b9a3-47f8-b2bd-c19c9e9421f9}">
+      <Declaration><![CDATA[(*
+Purpose: Returns the zero-based index of the last occurrence in the List
+Parameters: item:{X Extends Object}, The object to locate in the List
+Return: INT, The zero-based index of the last occurrence of item in the List if found, otherwise -1
+*)
+METHOD PUBLIC LastIndexOfItem : INT
+VAR_IN_OUT
+    item: Person;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[LastIndexOfItem := SUPER^._lastIndexOf(item);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Remove" Id="{b7fbca93-103a-4f02-b9fa-a7a4a0e30ce5}">
+      <Declaration><![CDATA[(*
+Purpose: Removes the address of the first occurrence of a specific object from the List
+Parameters: item:{X Extends Object}, The object to remove from the List
+Return: BOOL, True if item is successfully removed, otherwise False
+*)
+METHOD PUBLIC Remove : BOOL
+VAR_IN_OUT
+    item: Person;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Remove := SUPER^._remove(item);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RemoveAll" Id="{4373f781-37a2-4e72-8eaf-352e44119391}">
+      <Declaration><![CDATA[(*
+Purpose: Removes all the elements that match the conditions defined by the specified predicate
+Parameters: predicate:{Predicate_X_ Implements IPredicate}, The Predicate delegate that defines the conditions of the elements to search for; evaluateCaseNumber:INT, Number that specifies which condition to evaluate
+Return: INT, The number of elements removed from the List
+*)
+METHOD RemoveAll : INT
+VAR_INPUT
+    predicate: Predicate_Person_;
+    evaluateCaseNumber : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[RemoveAll := SUPER^._removeAll(predicate, evaluateCaseNumber);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ToArray" Id="{0d3f7ad5-7959-4452-88eb-637ed79d0352}">
+      <Declaration><![CDATA[(*
+Purpose: Copies the elements of the List to a new array
+Return: ARRAY[0..GVL.LIST_UPPER_BOUND] OF POINTER TO {X Extends Object}, An array containing copies of the elements of the List as {X Extends Object}
+*)
+METHOD PUBLIC ToArray : ARRAY[0..GVL.LIST_UPPER_BOUND] OF POINTER TO Person
+VAR
+    i : INT;
+    arrayOfIEquatable : ARRAY[0..GVL.LIST_UPPER_BOUND] OF POINTER TO I_Equatable;
+    _result : ARRAY[0..GVL.LIST_UPPER_BOUND] OF POINTER TO Person;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[arrayOfIEquatable := SUPER^._toArray();
+FOR i:=0 TO GetCount() - 1 DO
+    _result[i] := arrayOfIEquatable[i];
+END_FOR
+
+ToArray := _result;]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>
