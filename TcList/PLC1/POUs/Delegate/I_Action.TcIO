@@ -1,10 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
   <Itf Name="I_Action" Id="{cead35ff-aed5-4b3d-b8fd-4c4da36ec2ee}">
-    <Declaration><![CDATA[INTERFACE I_Action
+    <Declaration><![CDATA[(*
+Encapsulates a Perform method that has two parameters and does not return a value
+*)
+INTERFACE I_Action
 ]]></Declaration>
     <Method Name="Perform" Id="{649842f8-9bac-478c-9416-f22fb18098e2}">
-      <Declaration><![CDATA[METHOD Perform
+      <Declaration><![CDATA[(*
+Purpose: Encapsulates several methods that can be used in the ForEach loop of a List through all elements.
+Since Generic is not supported in Tc you need to implement one FB of your desired type (Action_X_) if you want to use "ForEach" method of a List that needs an Action as an input.
+Because you might need several actions for different situations, it's better to write a switch-case statement and put each action in one Case instead of creating multiple FBs.
+Later you can pass the CaseNumber to call your desired action.
+Parameters: performCaseNumber:INT, Number to choose between actions in the method; item:POINTER TO Object, The object that is passed by the List and can be used in actions.
+*)
+METHOD Perform
 VAR_INPUT
     performCaseNumber : INT;
 END_VAR

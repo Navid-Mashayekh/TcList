@@ -8,7 +8,14 @@
 ]]></ST>
     </Implementation>
     <Method Name="Perform" Id="{a2abe9cf-f46d-4c8a-b5ae-074ef44d8a54}">
-      <Declaration><![CDATA[METHOD Perform
+      <Declaration><![CDATA[(*
+Purpose: Encapsulates several methods that can be used in the ForEach loop of a List through all elements.
+Since Generic is not supported in Tc you need to implement one FB of your desired type (Action_X_) if you want to use "ForEach" method of a List that needs an Action as an input.
+Because you might need several actions for different situations, it's better to write a switch-case statement and put each action in one Case instead of creating multiple FBs.
+Later you can pass the CaseNumber to call your desired action.
+Parameters: performCaseNumber:INT, Number to choose between actions in the method; item:POINTER TO Object, The object that is passed by the List and can be used in actions.
+*)
+METHOD Perform
 VAR_INPUT
     performCaseNumber : INT;
 END_VAR

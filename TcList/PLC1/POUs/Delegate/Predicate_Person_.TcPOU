@@ -1,14 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
   <POU Name="Predicate_Person_" Id="{4bd30a13-2d4e-4e4e-a9a6-9885fcae8daf}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FINAL Predicate_Person_ IMPLEMENTS I_Predicate
+    <Declaration><![CDATA[(*
+You can use this FB as a template for your Predicates. Rename "Person" to your "typeName" and add your criterias.
+*)
+FUNCTION_BLOCK FINAL Predicate_Person_ IMPLEMENTS I_Predicate
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[
 ]]></ST>
     </Implementation>
     <Method Name="Evaluate" Id="{e45f646b-c15d-4c56-b530-df9ca901258a}">
-      <Declaration><![CDATA[METHOD Evaluate : BOOL
+      <Declaration><![CDATA[(*
+Purpose: Defines a set of criteria and determines whether the specified object meets one of those criteria. 
+Since Generic is not supported in Tc you need to implement one FB of your desired type (Predicated_X_) if you want to use methods of a List that need Predicate as an input.
+Because you might need several criterias for different situations, it's better to write a switch-case statement and put each criteria in one Case instead of creating multiple FBs.
+Later you can pass the CaseNumber to call your desired criteria.
+Parameters: evaluateCaseNumber:INT, Number to choose between criterias in the method; item:POINTER TO Object, The object to compare against the criteria defined within one of the casees in the method.
+Return: BOOL, True if item meets the criteria defined within the method, otherwise False.
+*)
+METHOD Evaluate : BOOL
 VAR_INPUT
     evaluateCaseNumber : INT;
 END_VAR
@@ -19,13 +30,13 @@ END_VAR
       <Implementation>
         <ST><![CDATA[CASE evaluateCaseNumber OF
     1 :
-    IF GVL.CastHelper.ObjectToPerson(item)^.GetAge() < 21 THEN
+    IF GVL.CastHelper.ObjectToPerson(item)^.GetAge() < 20 THEN
         Evaluate := TRUE;
     ELSE
         Evaluate := FALSE;
     END_IF
     2 :
-    IF GVL.CastHelper.ObjectToPerson(item)^.GetName() = 'Navid' THEN
+    IF GVL.CastHelper.ObjectToPerson(item)^.GetName() = 'John' THEN
         Evaluate := TRUE;
     ELSE
         Evaluate := FALSE;

@@ -1,7 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
   <POU Name="CastHelper" Id="{964cb584-8aec-41e4-a434-2f8aaed1cefb}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FINAL CastHelper
+    <Declaration><![CDATA[(*
+To pass objects between List (base) and List_X_ (derived) we need to cast types. Since these castings are used in several methods, they are all gathered here is this FB.
+AddressToI_Equatable is general for all lists.
+I_EquatableToX, ListToList_X & ObjectToX (X here indicates your desired object type) should be implemented foreach type that you want to create a list of.
+In this project for instance I created Person FB, then a List_Person_ and I_EquatableToPerson, ListToList_Person & ObjectToPerson. You can copy these methods and rename any "Person" to the name of your FB.
+*)
+FUNCTION_BLOCK FINAL CastHelper
 VAR_INPUT
 END_VAR
 VAR_OUTPUT

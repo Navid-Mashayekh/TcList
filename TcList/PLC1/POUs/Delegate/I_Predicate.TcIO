@@ -1,10 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
   <Itf Name="I_Predicate" Id="{b5753ae1-7c2d-4e25-aa57-7de6b240bbbe}">
-    <Declaration><![CDATA[INTERFACE I_Predicate
+    <Declaration><![CDATA[(*
+Represents the Evaluate method that defines a set of criteria and determines whether the specified object meets one of those criteria
+*)
+INTERFACE I_Predicate
 ]]></Declaration>
     <Method Name="Evaluate" Id="{1f04e299-ca25-45de-9d32-65436dc67c8d}">
-      <Declaration><![CDATA[METHOD Evaluate : BOOL
+      <Declaration><![CDATA[(*
+Purpose: Defines a set of criteria and determines whether the specified object meets one of those criteria. 
+Since Generic is not supported in Tc you need to implement one FB of your desired type (Predicated_X_) if you want to use methods of a List that need Predicate as an input.
+Because you might need several criterias for different situations, it's better to write a switch-case statement and put each criteria in one Case instead of creating multiple FBs.
+Later you can pass the CaseNumber to call your desired criteria.
+Parameters: evaluateCaseNumber:INT, Number to choose between criterias in the method; item:POINTER TO Object, The object to compare against the criteria defined within one of the casees in the method.
+Return: BOOL, True if item meets the criteria defined within the method, otherwise False.
+*)
+METHOD Evaluate : BOOL
 VAR_INPUT
     evaluateCaseNumber : INT;
 END_VAR
