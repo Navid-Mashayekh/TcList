@@ -8,7 +8,9 @@
 AddAndGetShouldBeByReference();
 GetCapacityShouldPass();
 GetCountShouldPass();
-ClearShouldPass();]]></ST>
+ClearShouldPass();
+RemoveAtShouldPass();
+RemoveRangeShouldPass();]]></ST>
     </Implementation>
     <Method Name="AddAndGetPersonShouldPass" Id="{25c92982-6de9-488f-9bc0-45793e501629}">
       <Declaration><![CDATA[METHOD AddAndGetPersonShouldPass
@@ -164,6 +166,88 @@ actualCount := list_Person_.GetCount();
 //Assert
 expectedCount := 1;
 AssertEquals(expectedCount, actualCount,'');
+
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RemoveAtShouldPass" Id="{1d891a18-a23d-45c2-8d94-b094a5a2c29f}">
+      <Declaration><![CDATA[METHOD RemoveAtShouldPass
+VAR
+    list_Person_ : List_Person_;
+    person : Person;
+    expectedPtPerson : POINTER TO Person := 0;
+    expectedCount : INT := 0;
+    actualPtPerson : POINTER TO Person;
+    actualCount : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('RemoveAtShouldPass');
+
+//Assign
+list_Person_.AddItem(person);
+
+//Act
+list_Person_.RemoveAt(0);
+actualCount := list_Person_.GetCount();
+actualPtPerson := list_Person_.GetItem(0);
+
+//Assert
+AssertEquals(expectedCount, actualCount,'');
+AssertEquals(expectedPtPerson, actualPtPerson,'');
+
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RemoveRangeShouldPass" Id="{d6049325-00aa-4c78-a69d-b2138d02581d}">
+      <Declaration><![CDATA[METHOD RemoveRangeShouldPass
+VAR
+    list_Person_ : List_Person_;
+    person0 : Person;
+    person1 : Person;
+    person2 : Person;
+    person3 : Person;
+    person4 : Person;
+    person5 : Person;
+    person6 : Person;
+    expectedPtPerson : POINTER TO Person := 0;
+    expectedCount : INT := 7 - 3;
+    actualPtPerson1 : POINTER TO Person;
+    actualPtPerson2 : POINTER TO Person;
+    actualCount : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('RemoveRangeShouldPass');
+
+//Assign
+person0.SetAge(0);
+person1.SetAge(1);
+person2.SetAge(2);
+person3.SetAge(3);
+person4.SetAge(4);
+person5.SetAge(5);
+person6.SetAge(6);
+list_Person_.AddItem(person0);
+list_Person_.AddItem(person1);
+list_Person_.AddItem(person2);
+list_Person_.AddItem(person3);
+list_Person_.AddItem(person4);
+list_Person_.AddItem(person5);
+list_Person_.AddItem(person6);
+
+//Act
+list_Person_.RemoveRange(2,3);
+actualCount := list_Person_.GetCount();
+actualPtPerson1 := list_Person_.GetItem(1);
+actualPtPerson2 := list_Person_.GetItem(2);
+
+//Assert
+AssertEquals(expectedCount, actualCount,'');
+AssertEquals_INT(person1.GetAge(), actualPtPerson1^.GetAge(),'');
+AssertEquals_INT(person5.GetAge(), actualPtPerson2^.GetAge(),'');
 
 
 TEST_FINISHED();]]></ST>
