@@ -12,7 +12,8 @@ Clear();
 RemoveAt();
 RemoveRange();
 Contains();
-Exists();]]></ST>
+Exists();
+Find();]]></ST>
     </Implementation>
     <Method Name="AddAndGet" Id="{25c92982-6de9-488f-9bc0-45793e501629}">
       <Declaration><![CDATA[METHOD AddAndGet
@@ -40,6 +41,7 @@ actualAge := actualPtPerson^.GetAge();
 //Assert
 AssertEquals(expectedIndex, actualIndex,'');
 AssertEquals(expectedAge, actualAge,'');
+AssertTrue(actualPtPerson^.Equals(expectedPerson),'');
 
 
 TEST_FINISHED();]]></ST>
@@ -203,6 +205,56 @@ actual := list_Person_.Exists(predicate_Person_, 3);
 //Assert
 expected := FALSE;
 AssertEquals(expected, actual,'Looking for a person with name G');
+
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Find" Id="{88eff670-7867-4249-acd8-bd79171fc10a}">
+      <Declaration><![CDATA[METHOD Find
+VAR
+    list_Person_ : List_Person_;
+    personA : Person;
+    personB : Person;
+    personC : Person;
+    personD : Person;
+    personE : Person;
+    personF : Person;
+    personG : Person;
+    predicate_Person_ : Predicate_Person_;
+    actualPtPerson : POINTER TO Person;
+    nullPtPerson : POINTER TO person := 0;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('FindShouldPass');
+
+//Assign
+personA.SetName('A');
+personB.SetName('B');
+personC.SetName('C');
+personD.SetName('D');
+personE.SetName('E');
+personF.SetName('F');
+personG.SetName('G');
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+list_Person_.AddItem(personE);
+list_Person_.AddItem(personF);
+
+//Act
+actualPtPerson := list_Person_.Find(predicate_Person_, 2);
+
+//Assert
+AssertTrue(actualPtPerson^.Equals(personC),'Get person with name C');
+
+//Act
+actualPtPerson := list_Person_.Find(predicate_Person_, 3);
+
+//Assert
+AssertEquals(nullPtPerson, actualPtPerson,'Get Zero when looking for person with name G');
 
 
 TEST_FINISHED();]]></ST>
