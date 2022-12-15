@@ -57,7 +57,10 @@
     <Compile Include="POUs\List\List_Person_.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\MAIN.TcPOU">
+    <Compile Include="POUs\List\List_Person_Test.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Tests.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Object.TcPOU">
@@ -97,6 +100,11 @@
     <None Include="PLC1.tmc">
       <SubType>Content</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <LibraryReference Include="TcUnit,1.2.0.0,www.tcunit.org">
+      <Namespace>TcUnit</Namespace>
+    </LibraryReference>
   </ItemGroup>
   <ProjectExtensions>
     <PlcProjectOptions>

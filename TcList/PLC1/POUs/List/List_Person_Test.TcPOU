@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="List_Person_Test" Id="{f9270774-45f6-4a3c-bd99-dc3e4865897e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK List_Person_Test EXTENDS TcUnit.FB_TestSuite
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[AddAndGetPersonShouldPass();
+AddAndGetShouldBeByReference();
+GetCapacityShouldPass();
+GetCountShouldPass();
+ClearShouldPass();]]></ST>
+    </Implementation>
+    <Method Name="AddAndGetPersonShouldPass" Id="{25c92982-6de9-488f-9bc0-45793e501629}">
+      <Declaration><![CDATA[METHOD AddAndGetPersonShouldPass
+VAR
+    list_Person_ : List_Person_;
+    expectedPerson : Person;
+    expectedAge : INT := 10;
+    expectedIndex : INT := 0;
+    actualPtPerson : POINTER TO Person;
+    actualAge : INT;
+    actualIndex : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('AddAndGetPersonShouldPass');
+
+//Assign
+expectedPerson.SetAge(expectedAge);
+
+//Act
+actualIndex := list_Person_.AddItem(expectedPerson);
+actualPtPerson := list_Person_.GetItem(actualIndex);
+actualAge := actualPtPerson^.GetAge();
+
+//Assert
+AssertEquals(expectedIndex, actualIndex,'');
+AssertEquals(expectedAge, actualAge,'');
+
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="AddAndGetShouldBeByReference" Id="{d5902a8f-61b3-4da7-91e7-b3e1326fada2}">
+      <Declaration><![CDATA[METHOD AddAndGetShouldBeByReference
+VAR
+    list_Person_ : List_Person_;
+    expectedPerson : Person;
+    expectedAge : INT := 10;
+    actualPtPerson : POINTER TO Person;
+    actualAge : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('AddAndGetShouldBeByReference');
+
+//Assign
+
+//Act
+list_Person_.AddItem(expectedPerson);
+actualPtPerson := list_Person_.GetItem(0);
+expectedPerson.SetAge(expectedAge);
+actualAge := actualPtPerson^.GetAge();
+
+//Assert
+AssertEquals(expectedAge, actualAge,'');
+
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ClearShouldPass" Id="{9b3dfb6f-1f77-47b8-8a33-f0a2c6ffe4cf}">
+      <Declaration><![CDATA[METHOD ClearShouldPass
+VAR
+    list_Person_ : List_Person_;
+    person : Person;
+    expectedCount : INT := 1;
+    actualCount : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('ClearShouldPass');
+
+//Assign
+list_Person_.AddItem(person);
+
+//Act
+actualCount := list_Person_.GetCount();
+
+//Assert
+AssertEquals(expectedCount, actualCount,'');
+
+//Act
+list_Person_.Clear();
+actualCount := list_Person_.GetCount();
+
+//Assert
+expectedCount := 0;
+AssertEquals(expectedCount, actualCount,'');
+
+
+TEST_FINISHED();
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetCapacityShouldPass" Id="{8ddaab13-7598-4afc-a5e5-0cd2f6d7be65}">
+      <Declaration><![CDATA[METHOD GetCapacityShouldPass
+VAR
+    list_Person_ : List_Person_;
+    person : Person;
+    expectedCapacity : INT := GVL.LIST_UPPER_BOUND + 1;
+    actualCapacity : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('GetCapacityShouldPass');
+
+//Act
+actualCapacity := list_Person_.GetCapacity();
+
+//Assert1
+AssertEquals_INT(expectedCapacity, actualCapacity,'');
+
+
+//Assign
+list_Person_.AddItem(person);
+
+//Act
+actualCapacity := list_Person_.GetCapacity();
+
+//Assert2
+AssertEquals(expectedCapacity, actualCapacity,'');
+
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetCountShouldPass" Id="{e9e9e69d-bbf9-467d-a81f-09763039079f}">
+      <Declaration><![CDATA[METHOD GetCountShouldPass
+VAR
+    list_Person_ : List_Person_;
+    person : Person;
+    expectedCount : INT := 0;
+    actualCount : INT;
+    actualPtPerson : POINTER TO Person;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('GetCountShouldPass');
+
+//Act
+actualCount := list_Person_.GetCount();
+
+//Assert
+AssertEquals_INT(expectedCount, actualCount,'');
+
+
+//Assign
+list_Person_.AddItem(person);
+
+//Act
+actualCount := list_Person_.GetCount();
+
+//Assert
+expectedCount := 1;
+AssertEquals(expectedCount, actualCount,'');
+
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>
