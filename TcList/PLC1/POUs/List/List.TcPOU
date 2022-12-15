@@ -645,7 +645,7 @@ END_IF]]></ST>
     </Method>
     <Method Name="GetCapacity" Id="{c196eeb0-ad3d-46c4-b767-5dfdf73f471e}">
       <Declaration><![CDATA[(*
-Purpose: Gets the total number of elements the internal array can hold
+Purpose: Gets the total number of elements the internal array can hold regardless of added elements
 Return: INT, The number of elements that the List can contain
 *)
 METHOD PUBLIC GetCapacity : INT

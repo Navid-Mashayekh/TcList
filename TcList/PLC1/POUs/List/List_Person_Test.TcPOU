@@ -11,7 +11,8 @@ GetCount();
 Clear();
 RemoveAt();
 RemoveRange();
-Contains();]]></ST>
+Contains();
+Exists();]]></ST>
     </Implementation>
     <Method Name="AddAndGet" Id="{25c92982-6de9-488f-9bc0-45793e501629}">
       <Declaration><![CDATA[METHOD AddAndGet
@@ -91,7 +92,7 @@ list_Person_.AddItem(person);
 actualCount := list_Person_.GetCount();
 
 //Assert
-AssertEquals(expectedCount, actualCount,'');
+AssertEquals(expectedCount, actualCount,'Get count after adding a person');
 
 //Act
 list_Person_.Clear();
@@ -99,7 +100,7 @@ actualCount := list_Person_.GetCount();
 
 //Assert
 expectedCount := 0;
-AssertEquals(expectedCount, actualCount,'');
+AssertEquals(expectedCount, actualCount,'Get count after clearing the list');
 
 
 TEST_FINISHED();
@@ -143,14 +144,65 @@ list_Person_.AddItem(person5);
 actual := list_Person_.Contains(person2);
 
 //Assert
-AssertEquals(expected, actual,'');
+AssertEquals(expected, actual,'Looking for person2');
 
 //Act
 actual := list_Person_.Contains(person6);
 
 //Assert
 expected := FALSE;
-AssertEquals(expected, actual,'');
+AssertEquals(expected, actual,'Looking for person6');
+
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Exists" Id="{2d5869da-5a98-40d2-baa2-7f0ec5c9ca2b}">
+      <Declaration><![CDATA[METHOD Exists
+VAR
+    list_Person_ : List_Person_;
+    personA : Person;
+    personB : Person;
+    personC : Person;
+    personD : Person;
+    personE : Person;
+    personF : Person;
+    personG : Person;
+    predicate_Person_ : Predicate_Person_;
+    actual : BOOL;
+    expected : BOOL := TRUE;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('ExistsShouldPass');
+
+//Assign
+personA.SetName('A');
+personB.SetName('B');
+personC.SetName('C');
+personD.SetName('D');
+personE.SetName('E');
+personF.SetName('F');
+personG.SetName('G');
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+list_Person_.AddItem(personE);
+list_Person_.AddItem(personF);
+
+//Act
+actual := list_Person_.Exists(predicate_Person_, 2);
+
+//Assert
+AssertEquals(expected, actual,'Looking for a person with name C');
+
+//Act
+actual := list_Person_.Exists(predicate_Person_, 3);
+
+//Assert
+expected := FALSE;
+AssertEquals(expected, actual,'Looking for a person with name G');
 
 
 TEST_FINISHED();]]></ST>
@@ -172,7 +224,7 @@ END_VAR
 actualCapacity := list_Person_.GetCapacity();
 
 //Assert1
-AssertEquals_INT(expectedCapacity, actualCapacity,'');
+AssertEquals_INT(expectedCapacity, actualCapacity,'Get capacity at the begining');
 
 
 //Assign
@@ -182,7 +234,7 @@ list_Person_.AddItem(person);
 actualCapacity := list_Person_.GetCapacity();
 
 //Assert2
-AssertEquals(expectedCapacity, actualCapacity,'');
+AssertEquals(expectedCapacity, actualCapacity,'Get capacity after adding a person');
 
 
 TEST_FINISHED();]]></ST>
@@ -205,7 +257,7 @@ END_VAR
 actualCount := list_Person_.GetCount();
 
 //Assert
-AssertEquals_INT(expectedCount, actualCount,'');
+AssertEquals_INT(expectedCount, actualCount,'Get count at the begining');
 
 
 //Assign
@@ -216,7 +268,7 @@ actualCount := list_Person_.GetCount();
 
 //Assert
 expectedCount := 1;
-AssertEquals(expectedCount, actualCount,'');
+AssertEquals(expectedCount, actualCount,'Get count after adding a person');
 
 
 TEST_FINISHED();]]></ST>
