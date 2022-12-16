@@ -18,7 +18,8 @@ FindAll();
 FindIndex();
 FindLast();
 FindLastIndex();
-Foreach();]]></ST>
+Foreach();
+GetRange();]]></ST>
     </Implementation>
     <Method Name="AddAndGet" Id="{25c92982-6de9-488f-9bc0-45793e501629}">
       <Declaration><![CDATA[METHOD AddAndGet
@@ -33,13 +34,15 @@ VAR
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[TEST('AddAndGetPersonShouldPass');
+        <ST><![CDATA[//Before All
+expectedPerson.SetAge(expectedAge);
+actualIndex := list_Person_.AddItem(expectedPerson);
+
+TEST('AddAndGetPersonShouldPass');
 
 //Assign
-expectedPerson.SetAge(expectedAge);
 
 //Act
-actualIndex := list_Person_.AddItem(expectedPerson);
 actualPtPerson := list_Person_.GetItem(actualIndex);
 actualAge := actualPtPerson^.GetAge();
 
@@ -49,27 +52,15 @@ AssertEquals(expectedAge, actualAge,'');
 AssertTrue(actualPtPerson^.Equals(expectedPerson),'');
 
 
-TEST_FINISHED();]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="AddAndGetShouldBeByReference" Id="{d5902a8f-61b3-4da7-91e7-b3e1326fada2}">
-      <Declaration><![CDATA[METHOD AddAndGetShouldBeByReference
-VAR
-    list_Person_ : List_Person_;
-    expectedPerson : Person;
-    expectedAge : INT := 10;
-    actualPtPerson : POINTER TO Person;
-    actualAge : INT;
-END_VAR
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[TEST('AddAndGetShouldBeByReference');
+TEST_FINISHED();
+
+TEST('AddAndGetShouldBeByReference');
 
 //Assign
 
 //Act
-list_Person_.AddItem(expectedPerson);
 actualPtPerson := list_Person_.GetItem(0);
+expectedAge := 20;
 expectedPerson.SetAge(expectedAge);
 actualAge := actualPtPerson^.GetAge();
 
@@ -640,6 +631,91 @@ actualCount := list_Person_.GetCount();
 expectedCount := 1;
 AssertEquals(expectedCount, actualCount,'Get count after adding a person');
 
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetRange" Id="{55525038-1c47-483e-bcd1-310e0b7b30ea}">
+      <Declaration><![CDATA[METHOD GetRange
+VAR
+    list_Person_ : List_Person_;
+    personA : Person;
+    personB : Person;
+    personC : Person;
+    personD : Person;
+    personE : Person;
+    personF : Person;
+    personG : Person;
+    actualList_Person_ : list_Person_;
+    actualCount : INT;
+    expectedCount : INT := 3;
+    actualPtPerson0 : POINTER TO Person;
+    actualPtPerson1 : POINTER TO Person;
+    actualPtPerson2 : POINTER TO Person;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Before All
+personA.SetAge(10);
+personB.SetAge(11);
+personC.SetAge(12);
+personD.SetAge(13);
+personE.SetAge(14);
+personF.SetAge(15);
+personG.SetAge(16);
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+list_Person_.AddItem(personE);
+list_Person_.AddItem(personF);
+
+TEST('GetRangeShouldReturnList');
+
+//Assign
+
+//Act
+actualList_Person_ := list_Person_.GetRange(1, expectedCount);
+actualCount := actualList_Person_.GetCount();
+actualPtPerson0 := actualList_Person_.GetItem(0);
+actualPtPerson1 := actualList_Person_.GetItem(1);
+actualPtPerson2 := actualList_Person_.GetItem(2);
+
+//Assert
+AssertEquals(expectedCount, actualCount, 'Check new list count');
+AssertTrue(actualPtPerson0^.Equals(personB),'First element should personB');
+AssertTrue(actualPtPerson1^.Equals(personC),'First element should personC');
+AssertTrue(actualPtPerson2^.Equals(personD),'First element should personD');
+
+TEST_FINISHED();
+
+
+TEST('GetRangeShouldReturnListTillLastElement');
+
+//Assign
+
+//Act
+actualList_Person_ := list_Person_.GetRange(1, 1000);
+actualCount := actualList_Person_.GetCount();
+
+//Assert
+expectedCount := 5;
+AssertEquals(expectedCount, actualCount, 'Check new list count for GetRange 1000');
+
+TEST_FINISHED();
+
+
+TEST('GetRangeShouldReturnEmptyList');
+
+//Assign
+
+//Act
+actualList_Person_ := list_Person_.GetRange(-5, 1);
+actualCount := actualList_Person_.GetCount();
+
+//Assert
+expectedCount := 0;
+AssertEquals(expectedCount, actualCount, 'Check new list count for GetRange starting -5');
 
 TEST_FINISHED();]]></ST>
       </Implementation>
