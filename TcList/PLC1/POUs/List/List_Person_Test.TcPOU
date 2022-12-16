@@ -23,6 +23,7 @@ GetRange();
 IndexOfItem();
 LastIndexOfItem();
 Initialize();
+Insert();
 InsertRange();]]></ST>
     </Implementation>
     <Method Name="AddAndGet" Id="{25c92982-6de9-488f-9bc0-45793e501629}">
@@ -851,6 +852,108 @@ actual := list_Person_.Initialize(unvalidArrayPtPerson);
 AssertEquals(expected, actual, 'check result');
 AssertEquals_INT(0, list_Person_.GetCount(),'check list count');
 TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Insert" Id="{d34c4093-ecfa-4630-8bce-fdd1288ae68f}">
+      <Declaration><![CDATA[METHOD Insert
+VAR
+    list_Person_ : List_Person_;
+    personA : Person;
+    personB : Person;
+    personC : Person;
+    personD : Person;
+    actualPtPerson1 : POINTER TO Person;
+    actualPtPerson2 : POINTER TO Person;
+    actualPtPerson3 : POINTER TO Person;
+    expected : INT := 2;
+    actual : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Before All
+personA.SetAge(10);
+personB.SetAge(11);
+personC.SetAge(12);
+personD.SetAge(13);
+personA.SetName('A');
+personB.SetName('B');
+personC.SetName('C');
+personD.SetName('D');
+
+TEST('InsertShouldPassAndReturnTheLastIndex');
+//Assign
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+//Act
+actual := list_Person_.Insert(2, personD);
+actualPtPerson1 := list_Person_.GetItem(1);
+actualPtPerson2 := list_Person_.GetItem(2);
+actualPtPerson3 := list_Person_.GetItem(3);
+//Assert
+AssertEquals(expected, actual, 'check result');
+AssertEquals_INT(4, list_Person_.GetCount(),'check list count');
+AssertTrue(actualPtPerson1^.Equals(personB),'check added element 1');
+AssertTrue(actualPtPerson2^.Equals(personD),'check added element 2');
+AssertTrue(actualPtPerson3^.Equals(personC),'check added element 3');
+TEST_FINISHED();
+
+TEST('InsertShouldPassEvenByIndexHigherThanListCurrentLastIndexAndReturnTheLastIndex');
+//Assign
+list_Person_.Clear();
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+expected := 3;
+//Act
+actual := list_Person_.Insert(7, personD);
+actualPtPerson1 := list_Person_.GetItem(1);
+actualPtPerson2 := list_Person_.GetItem(2);
+actualPtPerson3 := list_Person_.GetItem(3);
+//Assert
+AssertEquals(expected, actual, 'check result');
+AssertEquals_INT(4, list_Person_.GetCount(),'check list count');
+AssertTrue(actualPtPerson1^.Equals(personB),'check added element 1');
+AssertTrue(actualPtPerson2^.Equals(personC),'check added element 2');
+AssertTrue(actualPtPerson3^.Equals(personD),'check added element 3');
+TEST_FINISHED();
+
+TEST('InsertShouldPassEvenByIndexHigherThanListUpperBoundAndReturnTheLastIndex');
+//Assign
+list_Person_.Clear();
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+expected := 3;
+//Act
+actual := list_Person_.Insert(GVL.LIST_UPPER_BOUND + 1, personD);
+actualPtPerson1 := list_Person_.GetItem(1);
+actualPtPerson2 := list_Person_.GetItem(2);
+actualPtPerson3 := list_Person_.GetItem(3);
+//Assert
+AssertEquals(expected, actual, 'check result');
+AssertEquals_INT(4, list_Person_.GetCount(),'check list count');
+AssertTrue(actualPtPerson1^.Equals(personB),'check added element 1');
+AssertTrue(actualPtPerson2^.Equals(personC),'check added element 2');
+AssertTrue(actualPtPerson3^.Equals(personD),'check added element 3');
+TEST_FINISHED();
+
+TEST('InsertShouldFailByMinusIndexAndReturnMinusOne');
+//Assign
+list_Person_.Clear();
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+expected := -1;
+//Act
+actual := list_Person_.Insert(-1, personD);
+//Assert
+AssertEquals(expected, actual, 'check result');
+AssertEquals_INT(3, list_Person_.GetCount(),'check list count');
+TEST_FINISHED();
+
+
+]]></ST>
       </Implementation>
     </Method>
     <Method Name="InsertRange" Id="{ba7936f5-6a73-451b-b349-674c7956273e}">

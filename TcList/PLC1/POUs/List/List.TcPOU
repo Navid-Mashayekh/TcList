@@ -452,17 +452,17 @@ VAR
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[count := GetCount();
-IF count <= GVL.LIST_UPPER_BOUND AND index >= 0 AND index <= GVL.LIST_UPPER_BOUND THEN
+IF count <= GVL.LIST_UPPER_BOUND AND index >= 0 THEN
     IF index >= count THEN
         _result := _addItem(item);
     ELSE
         FOR i:=0 TO count - index - 1 DO
             _internalArray[count - i] := _internalArray[count - i - 1];
-		END_FOR
+        END_FOR
         _internalArray[index] := ADR(item);
         _count := _count + 1;
         _result := index;
-	END_IF
+    END_IF
 END_IF
 
 _insert := _result;
