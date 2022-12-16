@@ -25,7 +25,8 @@ LastIndexOfItem();
 Initialize();
 Insert();
 InsertRange();
-Remove();]]></ST>
+Remove();
+RemoveAll();]]></ST>
     </Implementation>
     <Method Name="AddAndGet" Id="{25c92982-6de9-488f-9bc0-45793e501629}">
       <Declaration><![CDATA[METHOD AddAndGet
@@ -349,7 +350,6 @@ VAR
     personD : Person;
     personE : Person;
     personF : Person;
-    personG : Person;
     predicate_Person_ : Predicate_Person_;
     actualList_Person_ : list_Person_;
     actualCount : INT;
@@ -357,25 +357,26 @@ VAR
     actualPtPerson0 : POINTER TO Person;
     actualPtPerson1 : POINTER TO Person;
     actualPtPerson2 : POINTER TO Person;
+    nullPtPerson : POINTER TO Person := 0;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[TEST('FindAllShouldReturnAProperList');
-
-//Assign
+        <ST><![CDATA[//Before All
 personA.SetAge(10);
 personB.SetAge(11);
 personC.SetAge(12);
 personD.SetAge(13);
 personE.SetAge(14);
 personF.SetAge(15);
-personG.SetAge(16);
 list_Person_.AddItem(personA);
 list_Person_.AddItem(personB);
 list_Person_.AddItem(personC);
 list_Person_.AddItem(personD);
 list_Person_.AddItem(personE);
 list_Person_.AddItem(personF);
+
+TEST('FindAllShouldReturnAProperList');
+//Assign
 //Act
 actualList_Person_ := list_Person_.FindAll(predicate_Person_, 1); //Get people younger than 13
 actualCount := actualList_Person_.GetCount();
@@ -387,6 +388,18 @@ AssertEquals(expectedCount, actualCount, 'Check new list count');
 AssertTrue(actualPtPerson0^.Equals(personA),'First element should personA');
 AssertTrue(actualPtPerson1^.Equals(personB),'First element should personB');
 AssertTrue(actualPtPerson2^.Equals(personC),'First element should personC');
+TEST_FINISHED();
+
+TEST('FindAllShouldReturnAnEmptyList');
+//Assign
+expectedCount := 0;
+//Act
+actualList_Person_ := list_Person_.FindAll(predicate_Person_, 4); //Get people older than 50
+actualCount := actualList_Person_.GetCount();
+actualPtPerson0 := actualList_Person_.GetItem(0);
+//Assert
+AssertEquals(expectedCount, actualCount, 'Check new list count');
+AssertEquals(nullPtPerson, actualPtPerson0, 'Check returned list element 0');
 TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
@@ -1213,6 +1226,101 @@ AssertFalse(actual,'check result of remove');
 AssertEquals(expectedCount, actualCount,'check list count');
 AssertTrue(actualPtPerson1^.Equals(personB),'check list element 1');
 AssertTrue(actualPtPerson2^.Equals(personD),'check list element 2');
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RemoveAll" Id="{edf0f28e-ef7b-4ba4-96c2-13e482372799}">
+      <Declaration><![CDATA[METHOD RemoveAll
+VAR
+    list_Person_ : List_Person_;
+    personA : Person;
+    personB : Person;
+    personC : Person;
+    personD : Person;
+    personE : Person;
+    personF : Person;
+    personG : Person;
+    predicate_Person_ : Predicate_Person_;
+    actual : INT;
+    expected : INT := 3;
+    actualCount : INT;
+    expectedCount : INT := 4;
+    actualPtPerson0 : POINTER TO Person;
+    actualPtPerson1 : POINTER TO Person;
+    actualPtPerson2 : POINTER TO Person;
+    actualPtPerson3 : POINTER TO Person;
+    actualPtPerson4 : POINTER TO Person;
+    actualPtPerson5 : POINTER TO Person;
+    actualPtPerson6 : POINTER TO Person;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Before All
+personA.SetAge(10);
+personB.SetAge(11);
+personC.SetAge(12);
+personD.SetAge(13);
+personE.SetAge(14);
+personF.SetAge(15);
+personG.SetAge(16);
+
+TEST('RemoveAllShouldReturnAProperList');
+//Assign
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+list_Person_.AddItem(personE);
+list_Person_.AddItem(personF);
+list_Person_.AddItem(personG);
+//Act
+actual := list_Person_.RemoveAll(predicate_Person_, 1); //Remove people younger than 13
+actualCount := list_Person_.GetCount();
+actualPtPerson0 := list_Person_.GetItem(0);
+actualPtPerson1 := list_Person_.GetItem(1);
+actualPtPerson2 := list_Person_.GetItem(2);
+actualPtPerson3 := list_Person_.GetItem(3);
+//Assert
+AssertEquals(expected, actual, 'check result');
+AssertEquals(expectedCount, actualCount, 'check list count');
+AssertTrue(actualPtPerson0^.Equals(personD),'check returned list element 0');
+AssertTrue(actualPtPerson1^.Equals(personE),'check returned list element 1');
+AssertTrue(actualPtPerson2^.Equals(personF),'check returned list element 2');
+AssertTrue(actualPtPerson3^.Equals(personG),'check returned list element 3');
+TEST_FINISHED();
+
+TEST('RemoveAllShouldReturnTheOriginalListUntouched');
+//Assign
+list_Person_.Clear();
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+list_Person_.AddItem(personE);
+list_Person_.AddItem(personF);
+list_Person_.AddItem(personG);
+expected := 0;
+expectedCount := 7;
+//Act
+actual := list_Person_.RemoveAll(predicate_Person_, 4); //Remove people older than 50
+actualCount := list_Person_.GetCount();
+actualPtPerson0 := list_Person_.GetItem(0);
+actualPtPerson1 := list_Person_.GetItem(1);
+actualPtPerson2 := list_Person_.GetItem(2);
+actualPtPerson3 := list_Person_.GetItem(3);
+actualPtPerson4 := list_Person_.GetItem(4);
+actualPtPerson5 := list_Person_.GetItem(5);
+actualPtPerson6 := list_Person_.GetItem(6);
+//Assert
+AssertEquals(expected, actual, 'check result');
+AssertEquals(expectedCount, actualCount, 'check list count');
+AssertTrue(actualPtPerson0^.Equals(personA),'check returned list element 0');
+AssertTrue(actualPtPerson1^.Equals(personB),'check returned list element 1');
+AssertTrue(actualPtPerson2^.Equals(personC),'check returned list element 2');
+AssertTrue(actualPtPerson3^.Equals(personD),'check returned list element 3');
+AssertTrue(actualPtPerson4^.Equals(personE),'check returned list element 4');
+AssertTrue(actualPtPerson5^.Equals(personF),'check returned list element 5');
+AssertTrue(actualPtPerson6^.Equals(personG),'check returned list element 6');
 TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>

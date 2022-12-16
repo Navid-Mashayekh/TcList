@@ -47,6 +47,12 @@ END_VAR
     ELSE
         Evaluate := FALSE;
     END_IF
+    4 :
+    IF GVL.CastHelper.ObjectToPerson(item)^.GetAge() > 50 THEN
+        Evaluate := TRUE;
+    ELSE
+        Evaluate := FALSE;
+    END_IF
 ELSE
     Evaluate := FALSE;
 END_CASE]]></ST>
