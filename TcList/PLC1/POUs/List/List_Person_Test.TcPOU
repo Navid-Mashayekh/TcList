@@ -15,7 +15,10 @@ Contains();
 Exists();
 Find();
 FindAll();
-FindIndex();]]></ST>
+FindIndex();
+FindLast();
+FindLastIndex();
+Foreach();]]></ST>
     </Implementation>
     <Method Name="AddAndGet" Id="{25c92982-6de9-488f-9bc0-45793e501629}">
       <Declaration><![CDATA[METHOD AddAndGet
@@ -115,13 +118,13 @@ TEST_FINISHED();
       <Declaration><![CDATA[METHOD Contains
 VAR
     list_Person_ : List_Person_;
-    person0 : Person;
-    person1 : Person;
-    person2 : Person;
-    person3 : Person;
-    person4 : Person;
-    person5 : Person;
-    person6 : Person;
+    personA : Person;
+    personB : Person;
+    personC : Person;
+    personD : Person;
+    personE : Person;
+    personF : Person;
+    personG : Person;
     actual : BOOL;
     expected : BOOL := TRUE;
 END_VAR
@@ -130,32 +133,39 @@ END_VAR
         <ST><![CDATA[TEST('ContainsShouldPass');
 
 //Assign
-person0.SetAge(10);
-person1.SetAge(11);
-person2.SetAge(12);
-person3.SetAge(13);
-person4.SetAge(14);
-person5.SetAge(15);
-person6.SetAge(16);
-list_Person_.AddItem(person0);
-list_Person_.AddItem(person1);
-list_Person_.AddItem(person2);
-list_Person_.AddItem(person3);
-list_Person_.AddItem(person4);
-list_Person_.AddItem(person5);
+personA.SetAge(10);
+personB.SetAge(11);
+personC.SetAge(12);
+personD.SetAge(13);
+personE.SetAge(14);
+personF.SetAge(15);
+personG.SetAge(16);
+personA.SetName('A');
+personB.SetName('B');
+personC.SetName('C');
+personD.SetName('D');
+personE.SetName('E');
+personF.SetName('F');
+personG.SetName('G');
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+list_Person_.AddItem(personE);
+list_Person_.AddItem(personF);
 
 //Act
-actual := list_Person_.Contains(person2);
+actual := list_Person_.Contains(personC);
 
 //Assert
-AssertEquals(expected, actual,'Looking for person2');
+AssertEquals(expected, actual,'Looking for personC');
 
 //Act
-actual := list_Person_.Contains(person6);
+actual := list_Person_.Contains(personG);
 
 //Assert
 expected := FALSE;
-AssertEquals(expected, actual,'Looking for person6');
+AssertEquals(expected, actual,'Looking for personG');
 
 
 TEST_FINISHED();]]></ST>
@@ -181,6 +191,13 @@ END_VAR
         <ST><![CDATA[TEST('ExistsShouldPass');
 
 //Assign
+personA.SetAge(10);
+personB.SetAge(11);
+personC.SetAge(12);
+personD.SetAge(13);
+personE.SetAge(14);
+personF.SetAge(15);
+personG.SetAge(16);
 personA.SetName('A');
 personB.SetName('B');
 personC.SetName('C');
@@ -232,6 +249,13 @@ END_VAR
         <ST><![CDATA[TEST('FindShouldPass');
 
 //Assign
+personA.SetAge(10);
+personB.SetAge(11);
+personC.SetAge(12);
+personD.SetAge(13);
+personE.SetAge(14);
+personF.SetAge(15);
+personG.SetAge(16);
 personA.SetName('A');
 personB.SetName('B');
 personC.SetName('C');
@@ -336,6 +360,13 @@ END_VAR
         <ST><![CDATA[TEST('FindIndexShouldPass');
 
 //Assign
+personA.SetAge(10);
+personB.SetAge(11);
+personC.SetAge(12);
+personD.SetAge(13);
+personE.SetAge(14);
+personF.SetAge(15);
+personG.SetAge(16);
 personA.SetName('A');
 personB.SetName('B');
 personC.SetName('C');
@@ -362,6 +393,186 @@ actualIndex := list_Person_.FindIndex(predicate_Person_, 3);
 //Assert
 expectedIndex := -1;
 AssertEquals(expectedIndex, actualIndex, 'Find person with name G index');
+
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FindLast" Id="{abbb3269-33fc-42ca-8bd9-9cbddf8b0564}">
+      <Declaration><![CDATA[METHOD FindLast
+VAR
+    list_Person_ : List_Person_;
+    personA : Person;
+    personB : Person;
+    personC : Person;
+    personC2 : Person;
+    personD : Person;
+    personE : Person;
+    personF : Person;
+    personG : Person;
+    predicate_Person_ : Predicate_Person_;
+    actualPtPerson : POINTER TO Person;
+    nullPtPerson : POINTER TO person := 0;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('FindLastShouldPass');
+
+//Assign
+personA.SetAge(10);
+personB.SetAge(11);
+personC.SetAge(12);
+personC2.SetAge(22);
+personD.SetAge(13);
+personE.SetAge(14);
+personF.SetAge(15);
+personG.SetAge(16);
+personA.SetName('A');
+personB.SetName('B');
+personC.SetName('C');
+personC2.SetName('C');
+personD.SetName('D');
+personE.SetName('E');
+personF.SetName('F');
+personG.SetName('G');
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+list_Person_.AddItem(personE);
+list_Person_.AddItem(personC2); //Duplicated C
+list_Person_.AddItem(personF);
+
+//Act
+actualPtPerson := list_Person_.FindLast(predicate_Person_, 2);
+
+//Assert
+AssertFalse(actualPtPerson^.Equals(personC),'Not the last person with name C');
+AssertTrue(actualPtPerson^.Equals(personC2),'Be the last person with name C');
+
+//Act
+actualPtPerson := list_Person_.Find(predicate_Person_, 3);
+
+//Assert
+AssertEquals(nullPtPerson, actualPtPerson,'Get Zero when looking for person with name G');
+
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FindLastIndex" Id="{2ce0d703-0d51-4a15-b8a5-468a2c4b2f32}">
+      <Declaration><![CDATA[METHOD FindLastIndex
+VAR
+    list_Person_ : List_Person_;
+    personA : Person;
+    personB : Person;
+    personC : Person;
+    personC2 : Person;
+    personD : Person;
+    personE : Person;
+    personF : Person;
+    personG : Person;
+    predicate_Person_ : Predicate_Person_;
+    actualIndex : INT;
+    expectedIndex : INT := 5;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('FindLastIndexShouldPass');
+
+//Assign
+personA.SetAge(10);
+personB.SetAge(11);
+personC.SetAge(12);
+personC.SetAge(22);
+personD.SetAge(13);
+personE.SetAge(14);
+personF.SetAge(15);
+personG.SetAge(16);
+personA.SetName('A');
+personB.SetName('B');
+personC.SetName('C');
+personC2.SetName('C');
+personD.SetName('D');
+personE.SetName('E');
+personF.SetName('F');
+personG.SetName('G');
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+list_Person_.AddItem(personE);
+list_Person_.AddItem(personC2);
+list_Person_.AddItem(personF);
+
+//Act
+actualIndex := list_Person_.FindLastIndex(predicate_Person_, 2);
+
+//Assert
+AssertEquals(expectedIndex, actualIndex, 'Find last person with name C index');
+
+//Act
+actualIndex := list_Person_.FindLastIndex(predicate_Person_, 3);
+
+//Assert
+expectedIndex := -1;
+AssertEquals(expectedIndex, actualIndex, 'Find person with name G index');
+
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Foreach" Id="{c7149333-61bc-45db-a517-2be27202cf0d}">
+      <Declaration><![CDATA[METHOD Foreach
+VAR
+    list_Person_ : List_Person_;
+    personA : Person;
+    personB : Person;
+    personC : Person;
+    personD : Person;
+    personE : Person;
+    personF : Person;
+    personG : Person;
+    action_Person_ : Action_Person_;
+    actualPtPersonArray : ARRAY[0..3] OF POINTER TO Person;
+    j : INT;
+    expectedName : STRING := 'John';
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('ForeachShouldPass');
+
+//Assign
+personA.SetAge(10);
+personB.SetAge(11);
+personC.SetAge(12);
+personD.SetAge(13);
+personE.SetAge(14);
+personF.SetAge(15);
+personG.SetAge(16);
+personA.SetName('A');
+personB.SetName('B');
+personC.SetName('C');
+personD.SetName('D');
+personE.SetName('E');
+personF.SetName('F');
+personG.SetName('G');
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+
+//Act
+list_Person_.Foreach(action_Person_, 2);
+FOR j:=0 TO 3 DO
+    actualPtPersonArray[j] := list_Person_.GetItem(j);
+END_FOR
+
+//Assert
+AssertEquals_STRING(expectedName, actualPtPersonArray[0]^.GetName(),'element 0 shuold be named John');
+AssertEquals_STRING(expectedName, actualPtPersonArray[1]^.GetName(),'element 0 shuold be named John');
+AssertEquals_STRING(expectedName, actualPtPersonArray[2]^.GetName(),'element 0 shuold be named John');
+AssertEquals_STRING(expectedName, actualPtPersonArray[3]^.GetName(),'element 0 shuold be named John');
 
 
 TEST_FINISHED();]]></ST>

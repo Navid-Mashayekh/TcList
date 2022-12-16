@@ -28,7 +28,7 @@ END_VAR
     1 :
     GVL.CastHelper.ObjectToPerson(item)^.SetAge(50);
     2 :
-    GVL.CastHelper.ObjectToPerson(item)^.SetName('Sylvia');
+    GVL.CastHelper.ObjectToPerson(item)^.SetName('John');
 ELSE
     RETURN;
 END_CASE]]></ST>

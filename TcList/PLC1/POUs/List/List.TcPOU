@@ -286,7 +286,7 @@ END_VAR]]></Declaration>
     FOR i:=0 TO _lastIndex DO
         _currentItem := GetItemAsIEquatable(_lastIndex - i);
         IF predicate.Evaluate(evaluateCaseNumber, _currentItem) THEN
-            _result := i;
+            _result := _lastIndex - i;
             EXIT;
         END_IF
     END_FOR
