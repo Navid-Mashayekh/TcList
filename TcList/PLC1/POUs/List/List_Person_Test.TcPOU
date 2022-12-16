@@ -13,7 +13,9 @@ RemoveAt();
 RemoveRange();
 Contains();
 Exists();
-Find();]]></ST>
+Find();
+FindAll();
+FindIndex();]]></ST>
     </Implementation>
     <Method Name="AddAndGet" Id="{25c92982-6de9-488f-9bc0-45793e501629}">
       <Declaration><![CDATA[METHOD AddAndGet
@@ -255,6 +257,111 @@ actualPtPerson := list_Person_.Find(predicate_Person_, 3);
 
 //Assert
 AssertEquals(nullPtPerson, actualPtPerson,'Get Zero when looking for person with name G');
+
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FindAll" Id="{7425f332-49f9-4c20-88f0-da5e69ea77ac}">
+      <Declaration><![CDATA[METHOD FindAll
+VAR
+    list_Person_ : List_Person_;
+    personA : Person;
+    personB : Person;
+    personC : Person;
+    personD : Person;
+    personE : Person;
+    personF : Person;
+    personG : Person;
+    predicate_Person_ : Predicate_Person_;
+    actualList_Person_ : list_Person_;
+    actualCount : INT;
+    expectedCount : INT := 3;
+    actualPtPerson0 : POINTER TO Person;
+    actualPtPerson1 : POINTER TO Person;
+    actualPtPerson2 : POINTER TO Person;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('FindAllShouldPass');
+
+//Assign
+personA.SetAge(10);
+personB.SetAge(11);
+personC.SetAge(12);
+personD.SetAge(13);
+personE.SetAge(14);
+personF.SetAge(15);
+personG.SetAge(16);
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+list_Person_.AddItem(personE);
+list_Person_.AddItem(personF);
+
+//Act
+actualList_Person_ := list_Person_.FindAll(predicate_Person_, 1); //Get people younger than 13
+actualCount := actualList_Person_.GetCount();
+actualPtPerson0 := actualList_Person_.GetItem(0);
+actualPtPerson1 := actualList_Person_.GetItem(1);
+actualPtPerson2 := actualList_Person_.GetItem(2);
+
+//Assert
+AssertEquals(expectedCount, actualCount, 'Check new list count');
+AssertTrue(actualPtPerson0^.Equals(personA),'First element should personA');
+AssertTrue(actualPtPerson1^.Equals(personB),'First element should personB');
+AssertTrue(actualPtPerson2^.Equals(personC),'First element should personC');
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FindIndex" Id="{4d72a505-eb57-4e55-8564-5f47ecafc6e4}">
+      <Declaration><![CDATA[METHOD FindIndex
+VAR
+    list_Person_ : List_Person_;
+    personA : Person;
+    personB : Person;
+    personC : Person;
+    personD : Person;
+    personE : Person;
+    personF : Person;
+    personG : Person;
+    predicate_Person_ : Predicate_Person_;
+    actualIndex : INT;
+    expectedIndex : INT := 2;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('FindIndexShouldPass');
+
+//Assign
+personA.SetName('A');
+personB.SetName('B');
+personC.SetName('C');
+personD.SetName('D');
+personE.SetName('E');
+personF.SetName('F');
+personG.SetName('G');
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+list_Person_.AddItem(personE);
+list_Person_.AddItem(personF);
+
+//Act
+actualIndex := list_Person_.FindIndex(predicate_Person_, 2);
+
+//Assert
+AssertEquals(expectedIndex, actualIndex, 'find person with name C index');
+
+//Act
+actualIndex := list_Person_.FindIndex(predicate_Person_, 3);
+
+//Assert
+expectedIndex := -1;
+AssertEquals(expectedIndex, actualIndex, 'Find person with name G index');
 
 
 TEST_FINISHED();]]></ST>

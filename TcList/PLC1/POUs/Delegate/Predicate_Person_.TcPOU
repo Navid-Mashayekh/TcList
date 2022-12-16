@@ -30,7 +30,7 @@ END_VAR
       <Implementation>
         <ST><![CDATA[CASE evaluateCaseNumber OF
     1 :
-    IF GVL.CastHelper.ObjectToPerson(item)^.GetAge() < 5 THEN
+    IF GVL.CastHelper.ObjectToPerson(item)^.GetAge() < 13 THEN
         Evaluate := TRUE;
     ELSE
         Evaluate := FALSE;
