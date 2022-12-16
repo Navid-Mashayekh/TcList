@@ -5,7 +5,6 @@
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[AddAndGet();
-AddAndGetShouldBeByReference();
 GetCapacity();
 GetCount();
 Clear();
@@ -19,7 +18,9 @@ FindIndex();
 FindLast();
 FindLastIndex();
 Foreach();
-GetRange();]]></ST>
+GetRange();
+IndexOfItem();
+LastIndexOfItem();]]></ST>
     </Implementation>
     <Method Name="AddAndGet" Id="{25c92982-6de9-488f-9bc0-45793e501629}">
       <Declaration><![CDATA[METHOD AddAndGet
@@ -716,6 +717,139 @@ actualCount := actualList_Person_.GetCount();
 //Assert
 expectedCount := 0;
 AssertEquals(expectedCount, actualCount, 'Check new list count for GetRange starting -5');
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="IndexOfItem" Id="{2b9558a7-6ede-4f14-ab62-6370229c5901}">
+      <Declaration><![CDATA[METHOD IndexOfItem
+VAR
+    list_Person_ : List_Person_;
+    personA : Person;
+    personB : Person;
+    personC : Person;
+    personD : Person;
+    personE : Person;
+    personF : Person;
+    personG : Person;
+    actualIndex : INT;
+    expectedIndex : INT := 3;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Before All
+personA.SetAge(10);
+personB.SetAge(11);
+personC.SetAge(12);
+personD.SetAge(13);
+personE.SetAge(14);
+personF.SetAge(15);
+personG.SetAge(16);
+personA.SetName('A');
+personB.SetName('B');
+personC.SetName('C');
+personD.SetName('D');
+personE.SetName('E');
+personF.SetName('F');
+personG.SetName('G');
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+list_Person_.AddItem(personE);
+list_Person_.AddItem(personF);
+
+
+TEST('IndexOfItemShouldPass');
+
+//Assign
+
+//Act
+actualIndex := list_Person_.IndexOfItem(personD);
+
+//Assert
+AssertEquals(expectedIndex, actualIndex, 'return the index of personD');
+
+TEST_FINISHED();
+
+
+TEST('IndexOfItemShouldReturn -1');
+
+//Assign
+
+//Act
+actualIndex := list_Person_.IndexOfItem(personG);
+
+//Assert
+expectedIndex := -1;
+AssertEquals(expectedIndex, actualIndex, 'return the index of personG');
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="LastIndexOfItem" Id="{eff48a9d-ea3d-4f2d-a75f-040f997150dd}">
+      <Declaration><![CDATA[METHOD LastIndexOfItem
+VAR
+    list_Person_ : List_Person_;
+    personA : Person;
+    personB : Person;
+    personC : Person;
+    personD : Person;
+    personE : Person;
+    personF : Person;
+    personG : Person;
+    actualIndex : INT;
+    expectedIndex : INT := 5;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Before All
+personA.SetAge(10);
+personB.SetAge(11);
+personC.SetAge(12);
+personD.SetAge(13);
+personE.SetAge(14);
+personF.SetAge(15);
+personG.SetAge(16);
+personA.SetName('A');
+personB.SetName('B');
+personC.SetName('C');
+personD.SetName('D');
+personE.SetName('E');
+personF.SetName('F');
+personG.SetName('G');
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+list_Person_.AddItem(personE);
+list_Person_.AddItem(personD);
+list_Person_.AddItem(personF);
+
+
+TEST('LastIndexOfItemShouldPass');
+
+//Assign
+
+//Act
+actualIndex := list_Person_.LastIndexOfItem(personD);
+
+//Assert
+AssertEquals(expectedIndex, actualIndex, 'return the last index of personD');
+
+TEST_FINISHED();
+
+
+TEST('LastIndexOfItemShouldReturn -1');
+
+//Assign
+
+//Act
+actualIndex := list_Person_.LastIndexOfItem(personG);
+
+//Assert
+expectedIndex := -1;
+AssertEquals(expectedIndex, actualIndex, 'return the last index of personG');
 
 TEST_FINISHED();]]></ST>
       </Implementation>
