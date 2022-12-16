@@ -24,7 +24,8 @@ IndexOfItem();
 LastIndexOfItem();
 Initialize();
 Insert();
-InsertRange();]]></ST>
+InsertRange();
+Remove();]]></ST>
     </Implementation>
     <Method Name="AddAndGet" Id="{25c92982-6de9-488f-9bc0-45793e501629}">
       <Declaration><![CDATA[METHOD AddAndGet
@@ -1153,6 +1154,65 @@ actualIndex := list_Person_.LastIndexOfItem(personG);
 //Assert
 expectedIndex := -1;
 AssertEquals(expectedIndex, actualIndex, 'return the last index of personG');
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Remove" Id="{b9673820-84f4-47e9-ba66-38a07758a735}">
+      <Declaration><![CDATA[METHOD Remove
+VAR
+    list_Person_ : List_Person_;
+    personA : Person;
+    personB : Person;
+    personC : Person;
+    personD : Person;
+    expectedCount : INT := 3;
+    actualPtPerson1 : POINTER TO Person;
+    actualPtPerson2 : POINTER TO Person;
+    actualCount : INT;
+    actual : BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Before All
+personA.SetAge(10);
+personB.SetAge(11);
+personC.SetAge(12);
+personD.SetAge(13);
+personA.SetName('A');
+personB.SetName('B');
+personC.SetName('C');
+personD.SetName('D');
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+
+TEST('RemoveShouldPassAndReturnTrue');
+//Assign
+//Act
+actual := list_Person_.Remove(personC);
+actualCount := list_Person_.GetCount();
+actualPtPerson1 := list_Person_.GetItem(1);
+actualPtPerson2 := list_Person_.GetItem(2);
+//Assert
+AssertTrue(actual,'check result of remove');
+AssertEquals(expectedCount, actualCount,'check list count');
+AssertTrue(actualPtPerson1^.Equals(personB),'check list element 1');
+AssertTrue(actualPtPerson2^.Equals(personD),'check list element 2');
+TEST_FINISHED();
+
+TEST('RemoveShouldFailAndReturnFalse');
+//Assign
+//Act
+actual := list_Person_.Remove(personC);
+actualCount := list_Person_.GetCount();
+actualPtPerson1 := list_Person_.GetItem(1);
+actualPtPerson2 := list_Person_.GetItem(2);
+//Assert
+AssertFalse(actual,'check result of remove');
+AssertEquals(expectedCount, actualCount,'check list count');
+AssertTrue(actualPtPerson1^.Equals(personB),'check list element 1');
+AssertTrue(actualPtPerson2^.Equals(personD),'check list element 2');
 TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
