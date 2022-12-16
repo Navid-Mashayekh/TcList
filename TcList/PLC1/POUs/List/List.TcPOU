@@ -452,7 +452,7 @@ VAR
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[count := GetCount();
-IF count <= GVL.LIST_UPPER_BOUND AND index >= 0 THEN
+IF count <= GVL.LIST_UPPER_BOUND AND index >= 0 AND index <= GVL.LIST_UPPER_BOUND THEN
     IF index >= count THEN
         _result := _addItem(item);
     ELSE
@@ -492,15 +492,19 @@ VAR
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF index >= 0 THEN
-    _lowerBound := LOWER_BOUND(items,1);
-    _upperBound := UPPER_BOUND(items,1);
-    _itemsLength := _upperBound - _lowerBound;
-    IF _itemsLength <= GetCapacity() - GetCount() THEN
-        FOR i := _lowerBound TO _upperBound DO
-            _result := _insert(index + j, items[i]^);
-            j := j + 1;
-        END_FOR
-    END_IF
+    IF index < GetCount() THEN
+        _lowerBound := LOWER_BOUND(items,1);
+        _upperBound := UPPER_BOUND(items,1);
+        _itemsLength := _upperBound - _lowerBound + 1;
+        IF _itemsLength <= GetCapacity() - GetCount() THEN
+            FOR i := _lowerBound TO _upperBound DO
+                _result := _insert(index + j, items[i]^);
+                j := j + 1;
+            END_FOR
+        END_IF
+    ELSE
+        _result := _addRange(items);
+	END_IF
 END_IF
 
 _insertRange := _result;

@@ -5,6 +5,7 @@
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[AddAndGet();
+AddRange();
 GetCapacity();
 GetCount();
 Clear();
@@ -21,7 +22,8 @@ Foreach();
 GetRange();
 IndexOfItem();
 LastIndexOfItem();
-Initialize();]]></ST>
+Initialize();
+InsertRange();]]></ST>
     </Implementation>
     <Method Name="AddAndGet" Id="{25c92982-6de9-488f-9bc0-45793e501629}">
       <Declaration><![CDATA[METHOD AddAndGet
@@ -60,6 +62,81 @@ expectedPerson.SetAge(expectedAge);
 actualAge := actualPtPerson^.GetAge();
 //Assert
 AssertEquals(expectedAge, actualAge,'');
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="AddRange" Id="{f5009314-9dd7-4cad-ac14-353c684e3b29}">
+      <Declaration><![CDATA[METHOD AddRange
+VAR
+    list_Person_ : List_Person_;
+    personA : Person;
+    personB : Person;
+    personC : Person;
+    personD : Person;
+    personE : Person;
+    personF : Person;
+    personG : Person;
+    validArrayPtPerson : ARRAY[0..2] OF POINTER TO Person := [ADR(personE), ADR(personF), ADR(personG)];
+    unvalidArrayPtPerson : ARRAY[0..6 + 1] OF POINTER TO Person;
+    actualPtPerson3 : POINTER TO Person;
+    actualPtPerson4 : POINTER TO Person;
+    actualPtPerson5 : POINTER TO Person;
+    actualPtPerson6 : POINTER TO Person;
+    expected : INT := 6;
+    actual : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Before All
+personA.SetAge(10);
+personB.SetAge(11);
+personC.SetAge(12);
+personD.SetAge(13);
+personE.SetAge(14);
+personF.SetAge(15);
+personG.SetAge(16);
+personA.SetName('A');
+personB.SetName('B');
+personC.SetName('C');
+personD.SetName('D');
+personE.SetName('E');
+personF.SetName('F');
+personG.SetName('G');
+
+TEST('AddRangeShouldPassAndReturnTheLastIndex');
+//Assign
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+//Act
+actual := list_Person_.AddRange(validArrayPtPerson);
+actualPtPerson3 := list_Person_.GetItem(3);
+actualPtPerson4 := list_Person_.GetItem(4);
+actualPtPerson5 := list_Person_.GetItem(5);
+actualPtPerson6 := list_Person_.GetItem(6);
+//Assert
+AssertEquals(expected, actual, 'check result');
+AssertEquals_INT(7, list_Person_.GetCount(),'check list count');
+AssertTrue(actualPtPerson3^.Equals(personD),'check added element 3');
+AssertTrue(actualPtPerson4^.Equals(personE),'check added element 4');
+AssertTrue(actualPtPerson5^.Equals(personF),'check added element 5');
+AssertTrue(actualPtPerson6^.Equals(personG),'check added element 6');
+TEST_FINISHED();
+
+TEST('AddRangeShouldFailAndReturnMinusOne');
+//Assign
+list_Person_.Clear();
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+expected := -1;
+//Act
+actual := list_Person_.AddRange(unvalidArrayPtPerson);
+//Assert
+AssertEquals(expected, actual, 'check result');
+AssertEquals_INT(4, list_Person_.GetCount(),'check list count');
 TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
@@ -731,7 +808,7 @@ VAR
     personA : Person;
     personB : Person;
     personC : Person;
-    validArrayPtPerson : ARRAY[0..2] OF POINTER TO Person := [ADR(personA), ADR(personA), ADR(personA)];
+    validArrayPtPerson : ARRAY[0..2] OF POINTER TO Person := [ADR(personA), ADR(personB), ADR(personC)];
     unvalidArrayPtPerson : ARRAY[0..GVL.LIST_UPPER_BOUND + 1] OF POINTER TO Person;
     actualPtPerson0 : POINTER TO Person;
     actualPtPerson1 : POINTER TO Person;
@@ -760,8 +837,8 @@ actualPtPerson2 := list_Person_.GetItem(2);
 AssertEquals(expected, actual, 'check result');
 AssertEquals_INT(3, list_Person_.GetCount(),'check list count');
 AssertTrue(actualPtPerson0^.Equals(personA),'check added element 0');
-AssertTrue(actualPtPerson1^.Equals(personA),'check added element 1');
-AssertTrue(actualPtPerson2^.Equals(personA),'check added element 2');
+AssertTrue(actualPtPerson1^.Equals(personB),'check added element 1');
+AssertTrue(actualPtPerson2^.Equals(personC),'check added element 2');
 TEST_FINISHED();
 
 TEST('InitializeShouldFailAndReturnMinusOne');
@@ -774,6 +851,149 @@ actual := list_Person_.Initialize(unvalidArrayPtPerson);
 AssertEquals(expected, actual, 'check result');
 AssertEquals_INT(0, list_Person_.GetCount(),'check list count');
 TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="InsertRange" Id="{ba7936f5-6a73-451b-b349-674c7956273e}">
+      <Declaration><![CDATA[METHOD InsertRange
+VAR
+    list_Person_ : List_Person_;
+    personA : Person;
+    personB : Person;
+    personC : Person;
+    personD : Person;
+    personE : Person;
+    personF : Person;
+    personG : Person;
+    validArrayPtPerson : ARRAY[0..2] OF POINTER TO Person := [ADR(personE), ADR(personF), ADR(personG)];
+    unvalidArrayPtPerson : ARRAY[0..6 + 1] OF POINTER TO Person;
+    actualPtPerson1 : POINTER TO Person;
+    actualPtPerson2 : POINTER TO Person;
+    actualPtPerson3 : POINTER TO Person;
+    actualPtPerson4 : POINTER TO Person;
+    actualPtPerson5 : POINTER TO Person;
+    actualPtPerson6 : POINTER TO Person;
+    actualPtPerson7 : POINTER TO Person;
+    expected : INT := 4;
+    actual : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Before All
+personA.SetAge(10);
+personB.SetAge(11);
+personC.SetAge(12);
+personD.SetAge(13);
+personE.SetAge(14);
+personF.SetAge(15);
+personG.SetAge(16);
+personA.SetName('A');
+personB.SetName('B');
+personC.SetName('C');
+personD.SetName('D');
+personE.SetName('E');
+personF.SetName('F');
+personG.SetName('G');
+
+TEST('InsertRangeShouldPassAndReturnTheLastIndex');
+//Assign
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+//Act
+actual := list_Person_.InsertRange(2, validArrayPtPerson);
+actualPtPerson1 := list_Person_.GetItem(1);
+actualPtPerson2 := list_Person_.GetItem(2);
+actualPtPerson3 := list_Person_.GetItem(3);
+actualPtPerson4 := list_Person_.GetItem(4);
+actualPtPerson5 := list_Person_.GetItem(5);
+//Assert
+AssertEquals(expected, actual, 'check result');
+AssertEquals_INT(7, list_Person_.GetCount(),'check list count');
+AssertTrue(actualPtPerson1^.Equals(personB),'check added element 1');
+AssertTrue(actualPtPerson2^.Equals(personE),'check added element 2');
+AssertTrue(actualPtPerson3^.Equals(personF),'check added element 3');
+AssertTrue(actualPtPerson4^.Equals(personG),'check added element 4');
+AssertTrue(actualPtPerson5^.Equals(personC),'check added element 5');
+TEST_FINISHED();
+
+TEST('InsertRangeShouldPassEvenByIndexHigherThanListCurrentLastIndexAndReturnTheLastIndex');
+//Assign
+list_Person_.Clear();
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+expected := 6;
+//Act
+actual := list_Person_.InsertRange(7, validArrayPtPerson);
+actualPtPerson3 := list_Person_.GetItem(3);
+actualPtPerson4 := list_Person_.GetItem(4);
+actualPtPerson5 := list_Person_.GetItem(5);
+actualPtPerson6 := list_Person_.GetItem(6);
+//Assert
+AssertEquals(expected, actual, 'check result');
+AssertEquals_INT(7, list_Person_.GetCount(),'check list count');
+AssertTrue(actualPtPerson3^.Equals(personD),'check added element 3');
+AssertTrue(actualPtPerson4^.Equals(personE),'check added element 4');
+AssertTrue(actualPtPerson5^.Equals(personF),'check added element 5');
+AssertTrue(actualPtPerson6^.Equals(personG),'check added element 6');
+TEST_FINISHED();
+
+TEST('InsertRangeShouldPassEvenByIndexHigherThanListUpperBoundAndReturnTheLastIndex');
+//Assign
+list_Person_.Clear();
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+expected := 6;
+//Act
+actual := list_Person_.InsertRange(7, validArrayPtPerson);
+actualPtPerson3 := list_Person_.GetItem(3);
+actualPtPerson4 := list_Person_.GetItem(4);
+actualPtPerson5 := list_Person_.GetItem(5);
+actualPtPerson6 := list_Person_.GetItem(6);
+//Assert
+AssertEquals(expected, actual, 'check result');
+AssertEquals_INT(7, list_Person_.GetCount(),'check list count');
+AssertTrue(actualPtPerson3^.Equals(personD),'check added element 3');
+AssertTrue(actualPtPerson4^.Equals(personE),'check added element 4');
+AssertTrue(actualPtPerson5^.Equals(personF),'check added element 5');
+AssertTrue(actualPtPerson6^.Equals(personG),'check added element 6');
+TEST_FINISHED();
+
+TEST('InsertRangeShouldFailByMinusIndexAndReturnMinusOne');
+//Assign
+list_Person_.Clear();
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+expected := -1;
+//Act
+actual := list_Person_.InsertRange(-1, validArrayPtPerson);
+//Assert
+AssertEquals(expected, actual, 'check result');
+AssertEquals_INT(4, list_Person_.GetCount(),'check list count');
+TEST_FINISHED();
+
+TEST('InsertRangeShouldFailByLongArrayLengthAndReturnMinusOne');
+//Assign
+list_Person_.Clear();
+list_Person_.AddItem(personA);
+list_Person_.AddItem(personB);
+list_Person_.AddItem(personC);
+list_Person_.AddItem(personD);
+expected := -1;
+//Act
+actual := list_Person_.InsertRange(2, unvalidArrayPtPerson);
+//Assert
+AssertEquals(expected, actual, 'check result');
+AssertEquals_INT(4, list_Person_.GetCount(),'check list count');
+TEST_FINISHED();
+
+]]></ST>
       </Implementation>
     </Method>
     <Method Name="LastIndexOfItem" Id="{eff48a9d-ea3d-4f2d-a75f-040f997150dd}">
