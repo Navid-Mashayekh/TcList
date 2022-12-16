@@ -20,7 +20,8 @@ FindLastIndex();
 Foreach();
 GetRange();
 IndexOfItem();
-LastIndexOfItem();]]></ST>
+LastIndexOfItem();
+Initialize();]]></ST>
     </Implementation>
     <Method Name="AddAndGet" Id="{25c92982-6de9-488f-9bc0-45793e501629}">
       <Declaration><![CDATA[METHOD AddAndGet
@@ -720,6 +721,58 @@ actualIndex := list_Person_.IndexOfItem(personG);
 //Assert
 expectedIndex := -1;
 AssertEquals(expectedIndex, actualIndex, 'return the index of personG');
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{6946ce10-88c8-4daa-b1a2-e3b32700cff8}">
+      <Declaration><![CDATA[METHOD Initialize
+VAR
+    list_Person_ : List_Person_;
+    personA : Person;
+    personB : Person;
+    personC : Person;
+    validArrayPtPerson : ARRAY[0..2] OF POINTER TO Person := [ADR(personA), ADR(personA), ADR(personA)];
+    unvalidArrayPtPerson : ARRAY[0..GVL.LIST_UPPER_BOUND + 1] OF POINTER TO Person;
+    actualPtPerson0 : POINTER TO Person;
+    actualPtPerson1 : POINTER TO Person;
+    actualPtPerson2 : POINTER TO Person;
+    expected : INT := 2;
+    actual : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Before All
+personA.SetAge(10);
+personB.SetAge(11);
+personC.SetAge(12);
+personA.SetName('A');
+personB.SetName('B');
+personC.SetName('C');
+
+TEST('InitializeShouldPassAndReturnTheLastIndex');
+//Assign
+//Act
+actual := list_Person_.Initialize(validArrayPtPerson);
+actualPtPerson0 := list_Person_.GetItem(0);
+actualPtPerson1 := list_Person_.GetItem(1);
+actualPtPerson2 := list_Person_.GetItem(2);
+//Assert
+AssertEquals(expected, actual, 'check result');
+AssertEquals_INT(3, list_Person_.GetCount(),'check list count');
+AssertTrue(actualPtPerson0^.Equals(personA),'check added element 0');
+AssertTrue(actualPtPerson1^.Equals(personA),'check added element 1');
+AssertTrue(actualPtPerson2^.Equals(personA),'check added element 2');
+TEST_FINISHED();
+
+TEST('InitializeShouldFailAndReturnMinusOne');
+//Assign
+list_Person_.Clear();
+expected := -1;
+//Act
+actual := list_Person_.Initialize(unvalidArrayPtPerson);
+//Assert
+AssertEquals(expected, actual, 'check result');
+AssertEquals_INT(0, list_Person_.GetCount(),'check list count');
 TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>

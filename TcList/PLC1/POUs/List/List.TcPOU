@@ -61,7 +61,7 @@ END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[_lowerBound := LOWER_BOUND(items,1);
 _upperBound := UPPER_BOUND(items,1);
-_itemsLength := _upperBound - _lowerBound;
+_itemsLength := _upperBound - _lowerBound + 1;
 IF _itemsLength <= GetCapacity() - GetCount() THEN
     FOR i := _lowerBound TO _upperBound DO
         _addItem(items[i]^);
@@ -420,7 +420,7 @@ END_VAR
       <Implementation>
         <ST><![CDATA[_lowerBound := LOWER_BOUND(items,1);
 _upperBound := UPPER_BOUND(items,1);
-_itemsLength := _upperBound - _lowerBound;
+_itemsLength := _upperBound - _lowerBound + 1;
 IF _itemsLength <= GetCapacity() THEN
     Clear();
     _result := _addRange(items);
