@@ -1,0 +1,739 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="List_I_Observer_Test" Id="{82d67012-1999-4696-8e1f-e9c51c0eec1b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK List_I_Observer_Test EXTENDS TcUnit.FB_TestSuite
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[AddItem();
+Clear();
+Contains();
+Foreach();
+GetCapacity();
+GetCount();
+GetItem();
+IndexOfItem();
+Insert();
+LastIndexOfItem();
+Remove();
+RemoveAt();
+RemoveRange();]]></ST>
+    </Implementation>
+    <Method Name="AddItem" Id="{879ef9b7-8e5b-41a9-9b82-fff17c5acf12}">
+      <Declaration><![CDATA[METHOD AddItem
+VAR
+    propertyObserversList : List_I_Observer_;
+    observerA : PropertyObserver;
+    observerB : PropertyObserver;
+    actualIndex1 : INT;
+    actualIndex2 : INT;
+    j : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('AddPropertyObserverShouldPass');
+//Assign
+//Act
+actualIndex1 := propertyObserversList.AddItem(observerA);
+actualIndex2 := propertyObserversList.AddItem(observerB);
+//Assert
+AssertEquals_INT(0, actualIndex1,'check add 1');
+AssertEquals_INT(1, actualIndex2,'check add 2');
+TEST_FINISHED();
+
+TEST('AddToAFullListShouldReturnMinusOne');
+//Assign
+propertyObserversList.Clear();
+FOR j:=0 TO GVL.LIST_UPPER_BOUND DO
+    propertyObserversList.AddItem(observerA);
+END_FOR
+//Act
+actualIndex1 := propertyObserversList.AddItem(observerB);
+//Assert
+AssertEquals_INT(-1, actualIndex1,'check overflow add');
+TEST_FINISHED();
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Clear" Id="{6768b5d0-5a2a-4020-acf7-9bea69317857}">
+      <Declaration><![CDATA[METHOD Clear
+VAR
+    propertyObserversList1 : List_I_Observer_;
+    propertyObserversList2 : List_I_Observer_;
+    observer : PropertyObserver;
+    expectedCount : INT := 0;
+    actualCount : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('ClearAFilledListShouldPass');
+//Assign
+propertyObserversList1.AddItem(observer);
+//Act
+propertyObserversList1.Clear();
+actualCount := propertyObserversList1.GetCount();
+//Assert
+AssertEquals(expectedCount, actualCount,'');
+TEST_FINISHED();
+
+TEST('ClearAnEmptyListShouldPass');
+//Assign
+expectedCount := 0;
+//Act
+propertyObserversList2.Clear();
+actualCount := propertyObserversList2.GetCount();
+//Assert
+AssertEquals(expectedCount, actualCount,'');
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Contains" Id="{44fc7f66-46c3-42da-bd0a-d5ab89e08166}">
+      <Declaration><![CDATA[METHOD Contains
+VAR
+    propertyObserversList : List_I_Observer_;
+    observerA : PropertyObserver;
+    observerB : PropertyObserver;
+    observerC : PropertyObserver;
+    observerD : PropertyObserver;
+    observerE : PropertyObserver;
+    observerF : PropertyObserver;
+    observerG : PropertyObserver;
+    actual : BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[////Before All
+propertyObserversList.AddItem(observerA);
+propertyObserversList.AddItem(observerB);
+propertyObserversList.AddItem(observerC);
+propertyObserversList.AddItem(observerD);
+propertyObserversList.AddItem(observerE);
+propertyObserversList.AddItem(observerF);
+
+TEST('ContainsShouldReturnTrue');
+//Assign
+//Act
+actual := propertyObserversList.Contains(observerC);
+//Assert
+AssertTrue(actual,'Looking for observerC');
+TEST_FINISHED();
+
+TEST('ContainsShouldReturnFalse');
+//Assign
+//Act
+actual := propertyObserversList.Contains(observerG);
+//Assert
+AssertFalse(actual,'Looking for observerG');
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Foreach" Id="{f81f9c20-b962-4d94-81ce-566bfbea4b79}">
+      <Declaration><![CDATA[METHOD Foreach
+VAR
+    propertyObserversList : List_I_Observer_;
+    observerA : PropertyObserver;
+    observerB : PropertyObserver;
+    observerC : PropertyObserver;
+    observerD : PropertyObserver;
+    observerE : PropertyObserver;
+    action_I_Observer : Action_I_Observer_;
+    actualPtPropertyObserverArray : ARRAY[0..3] OF POINTER TO PropertyObserver;
+    j : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('ForeachByDoingActionOneShouldPass');
+//Assign
+observerA.SetCounter(101);
+observerB.SetCounter(102);
+observerC.SetCounter(103);
+observerD.SetCounter(104);
+propertyObserversList.AddItem(observerA);
+propertyObserversList.AddItem(observerB);
+propertyObserversList.AddItem(observerC);
+propertyObserversList.AddItem(observerD);
+//Act
+propertyObserversList.Foreach(action_I_Observer, 1);
+FOR j:=0 TO 3 DO
+    __QUERYPOINTER(propertyObserversList.GetItem(j), actualPtPropertyObserverArray[j]);
+END_FOR
+//Assert
+AssertEquals_INT(102, actualPtPropertyObserverArray[0]^.GetCounter(),'element 0 counter shuold be increment 1');
+AssertEquals_INT(103, actualPtPropertyObserverArray[1]^.GetCounter(),'element 1 counter shuold be increment 1');
+AssertEquals_INT(104, actualPtPropertyObserverArray[2]^.GetCounter(),'element 2 counter shuold be increment 1');
+AssertEquals_INT(105, actualPtPropertyObserverArray[3]^.GetCounter(),'element 3 counter shuold be increment 1');
+TEST_FINISHED();
+
+TEST('ForeachByDoingActionTwoShouldPass');
+//Assign
+observerA.SetCounter(101);
+observerB.SetCounter(102);
+observerC.SetCounter(103);
+observerD.SetCounter(104);
+propertyObserversList.Clear();
+propertyObserversList.AddItem(observerA);
+propertyObserversList.AddItem(observerB);
+propertyObserversList.AddItem(observerC);
+propertyObserversList.AddItem(observerD);
+//Act
+propertyObserversList.Foreach(action_I_Observer, 2);
+FOR j:=0 TO 3 DO
+    __QUERYPOINTER(propertyObserversList.GetItem(j), actualPtPropertyObserverArray[j]);
+END_FOR
+//Assert
+AssertEquals_INT(100, actualPtPropertyObserverArray[0]^.GetCounter(),'element 0 counter shuold be decrement 1');
+AssertEquals_INT(101, actualPtPropertyObserverArray[1]^.GetCounter(),'element 1 counter shuold be decrement 1');
+AssertEquals_INT(102, actualPtPropertyObserverArray[2]^.GetCounter(),'element 2 counter shuold be decrement 1');
+AssertEquals_INT(103, actualPtPropertyObserverArray[3]^.GetCounter(),'element 3 counter shuold be decrement 1');
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetCapacity" Id="{e73c1ae2-af25-4003-b788-2e08c032652e}">
+      <Declaration><![CDATA[METHOD GetCapacity
+VAR
+    propertyObserversList : List_I_Observer_;
+    observer : PropertyObserver;
+    expectedCapacity : INT := GVL.LIST_UPPER_BOUND + 1;
+    actualCapacity : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('GetCapacityShouldPass');
+//Act
+actualCapacity := propertyObserversList.GetCapacity();
+//Assert
+AssertEquals_INT(expectedCapacity, actualCapacity,'Get capacity at the begining');
+TEST_FINISHED();
+
+TEST('GetCapacityShouldPassWithSameValue');
+//Assign
+propertyObserversList.AddItem(observer);
+//Act
+actualCapacity := propertyObserversList.GetCapacity();
+//Assert
+AssertEquals(expectedCapacity, actualCapacity,'Get capacity after adding an observer');
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetCount" Id="{22e51311-fcfd-447b-b0a0-3f32658d256b}">
+      <Declaration><![CDATA[METHOD GetCount
+VAR
+    propertyObserversList : List_I_Observer_;
+    observer : PropertyObserver;
+    expectedCount : INT := 0;
+    actualCount : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('GetCountShouldReturnZero');
+//Act
+actualCount := propertyObserversList.GetCount();
+//Assert
+AssertEquals_INT(expectedCount, actualCount,'Get count at the begining');
+TEST_FINISHED();
+
+TEST('GetCountShouldReturnOne');
+//Assign
+propertyObserversList.AddItem(observer);
+expectedCount := 1;
+//Act
+actualCount := propertyObserversList.GetCount();
+//Assert
+AssertEquals(expectedCount, actualCount,'Get count after adding an observer');
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetItem" Id="{e995b47f-76b6-4b77-a75f-de43062e4410}">
+      <Declaration><![CDATA[METHOD GetItem
+VAR
+    propertyObserversList : List_I_Observer_;
+    expectedObserverA : PropertyObserver;
+    expectedObserverB : PropertyObserver;
+    actualObserver : I_Observer;
+    actualPropertyObserverA : POINTER TO PropertyObserver;
+    actualPropertyObserverB : POINTER TO PropertyObserver;
+    expectedIndex : INT := 0;
+    actualIndex : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('GetPropertyObserverShouldPass');
+//Assign
+expectedObserverA.SetCounter(101);
+expectedObserverB.SetCounter(102);
+propertyObserversList.AddItem(expectedObserverA);
+propertyObserversList.AddItem(expectedObserverB);
+//Act
+actualObserver := propertyObserversList.GetItem(0);
+__QUERYPOINTER(actualObserver, actualPropertyObserverA);
+actualObserver := propertyObserversList.GetItem(1);
+__QUERYPOINTER(actualObserver, actualPropertyObserverB);
+//Assert
+AssertTrue(actualPropertyObserverA^.Equals(expectedObserverA),'check A');
+AssertTrue(actualPropertyObserverB^.Equals(expectedObserverB),'check B');
+TEST_FINISHED();
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="IndexOfItem" Id="{d9e46434-488d-4134-8986-042227656cd1}">
+      <Declaration><![CDATA[METHOD IndexOfItem
+VAR
+    propertyObserversList : List_I_Observer_;
+    observerA : PropertyObserver;
+    observerB : PropertyObserver;
+    observerC : PropertyObserver;
+    observerD : PropertyObserver;
+    observerE : PropertyObserver;
+    observerF : PropertyObserver;
+    observerG : PropertyObserver;
+    actualIndex : INT;
+    expectedIndex : INT := 3;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Before All
+propertyObserversList.AddItem(observerA);
+propertyObserversList.AddItem(observerB);
+propertyObserversList.AddItem(observerC);
+propertyObserversList.AddItem(observerD);
+propertyObserversList.AddItem(observerE);
+propertyObserversList.AddItem(observerF);
+
+TEST('IndexOfItemShouldReturnTheIndex');
+//Assign
+//Act
+actualIndex := propertyObserversList.IndexOfItem(observerD);
+//Assert
+AssertEquals(expectedIndex, actualIndex, 'return the index of observerD');
+TEST_FINISHED();
+
+TEST('IndexOfItemShouldReturnMinusOne');
+//Assign
+//Act
+actualIndex := propertyObserversList.IndexOfItem(observerG);
+//Assert
+expectedIndex := -1;
+AssertEquals(expectedIndex, actualIndex, 'return the index of observerG');
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Insert" Id="{ad27d21f-509c-4abe-9bc4-734b76038962}">
+      <Declaration><![CDATA[METHOD Insert
+VAR
+    propertyObserversList : List_I_Observer_;
+    observerA : PropertyObserver;
+    observerB : PropertyObserver;
+    observerC : PropertyObserver;
+    observerD : PropertyObserver;
+    actualPtPropertyObserverArray : ARRAY[0..3] OF POINTER TO PropertyObserver;
+    expected : INT := 2;
+    actual : INT;
+    j : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Before All
+observerA.SetCounter(101);
+observerB.SetCounter(102);
+observerC.SetCounter(103);
+observerD.SetCounter(104);
+
+TEST('InsertShouldPassAndReturnTheLastIndex');
+//Assign
+propertyObserversList.AddItem(observerA);
+propertyObserversList.AddItem(observerB);
+propertyObserversList.AddItem(observerC);
+//Act
+actual := propertyObserversList.Insert(2, observerD);
+FOR j:=0 TO 3 DO
+    __QUERYPOINTER(propertyObserversList.GetItem(j), actualPtPropertyObserverArray[j]);
+END_FOR
+//Assert
+AssertEquals(expected, actual, 'check result');
+AssertEquals_INT(4, propertyObserversList.GetCount(),'check list count');
+AssertTrue(actualPtPropertyObserverArray[0]^.Equals(observerA),'check element 0');
+AssertTrue(actualPtPropertyObserverArray[1]^.Equals(observerB),'check element 1');
+AssertTrue(actualPtPropertyObserverArray[2]^.Equals(observerD),'check element 2');
+AssertTrue(actualPtPropertyObserverArray[3]^.Equals(observerC),'check element 3');
+TEST_FINISHED();
+
+TEST('InsertShouldPassEvenByIndexHigherThanListCurrentLastIndexAndReturnTheLastIndex');
+//Assign
+propertyObserversList.Clear();
+propertyObserversList.AddItem(observerA);
+propertyObserversList.AddItem(observerB);
+propertyObserversList.AddItem(observerC);
+expected := 3;
+//Act
+actual := propertyObserversList.Insert(7, observerD);
+FOR j:=0 TO 3 DO
+    __QUERYPOINTER(propertyObserversList.GetItem(j), actualPtPropertyObserverArray[j]);
+END_FOR
+//Assert
+AssertEquals(expected, actual, 'check result');
+AssertEquals_INT(4, propertyObserversList.GetCount(),'check list count');
+AssertTrue(actualPtPropertyObserverArray[0]^.Equals(observerA),'check element 0');
+AssertTrue(actualPtPropertyObserverArray[1]^.Equals(observerB),'check element 1');
+AssertTrue(actualPtPropertyObserverArray[2]^.Equals(observerC),'check element 2');
+AssertTrue(actualPtPropertyObserverArray[3]^.Equals(observerD),'check element 3');
+TEST_FINISHED();
+
+TEST('InsertShouldPassEvenByIndexHigherThanListUpperBoundAndReturnTheLastIndex');
+//Assign
+propertyObserversList.Clear();
+propertyObserversList.AddItem(observerA);
+propertyObserversList.AddItem(observerB);
+propertyObserversList.AddItem(observerC);
+expected := 3;
+//Act
+actual := propertyObserversList.Insert(GVL.LIST_UPPER_BOUND + 1, observerD);
+FOR j:=0 TO 3 DO
+    __QUERYPOINTER(propertyObserversList.GetItem(j), actualPtPropertyObserverArray[j]);
+END_FOR
+//Assert
+AssertEquals(expected, actual, 'check result');
+AssertEquals_INT(4, propertyObserversList.GetCount(),'check list count');
+AssertTrue(actualPtPropertyObserverArray[0]^.Equals(observerA),'check element 0');
+AssertTrue(actualPtPropertyObserverArray[1]^.Equals(observerB),'check element 1');
+AssertTrue(actualPtPropertyObserverArray[2]^.Equals(observerC),'check element 2');
+AssertTrue(actualPtPropertyObserverArray[3]^.Equals(observerD),'check element 3');
+TEST_FINISHED();
+
+TEST('InsertShouldFailByMinusIndexAndReturnMinusOne');
+//Assign
+propertyObserversList.Clear();
+propertyObserversList.AddItem(observerA);
+propertyObserversList.AddItem(observerB);
+propertyObserversList.AddItem(observerC);
+expected := -1;
+//Act
+actual := propertyObserversList.Insert(-1, observerD);
+//Assert
+AssertEquals(expected, actual, 'check result');
+AssertEquals_INT(3, propertyObserversList.GetCount(),'check list count');
+TEST_FINISHED();
+
+
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="LastIndexOfItem" Id="{de0d7892-94c5-48ac-929c-1f04033a89c8}">
+      <Declaration><![CDATA[METHOD LastIndexOfItem
+VAR
+    propertyObserversList : List_I_Observer_;
+    observerA : PropertyObserver;
+    observerB : PropertyObserver;
+    observerC : PropertyObserver;
+    observerD : PropertyObserver;
+    observerE : PropertyObserver;
+    observerF : PropertyObserver;
+    observerG : PropertyObserver;
+    actualIndex : INT;
+    expectedIndex : INT := 5;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Before All
+propertyObserversList.AddItem(observerA);
+propertyObserversList.AddItem(observerB);
+propertyObserversList.AddItem(observerC);
+propertyObserversList.AddItem(observerD);
+propertyObserversList.AddItem(observerE);
+propertyObserversList.AddItem(observerD);
+propertyObserversList.AddItem(observerF);
+
+TEST('LastIndexOfItemShouldReturnTheIndex');
+//Assign
+//Act
+actualIndex := propertyObserversList.LastIndexOfItem(observerD);
+//Assert
+AssertEquals(expectedIndex, actualIndex, 'return the last index of observerD');
+TEST_FINISHED();
+
+TEST('LastIndexOfItemShouldReturnMinusOne');
+//Assign
+//Act
+actualIndex := propertyObserversList.LastIndexOfItem(observerG);
+//Assert
+expectedIndex := -1;
+AssertEquals(expectedIndex, actualIndex, 'return the last index of observerG');
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Remove" Id="{ebe15737-1b11-4ee8-8fa7-a8d59fa10612}">
+      <Declaration><![CDATA[METHOD Remove
+VAR
+    propertyObserversList : List_I_Observer_;
+    observerA : PropertyObserver;
+    observerB : PropertyObserver;
+    observerC : PropertyObserver;
+    observerD : PropertyObserver;
+    actualPtPropertyObserverArray : ARRAY[0..3] OF POINTER TO PropertyObserver;
+    expectedCount : INT := 3;
+    actualCount : INT;
+    actual : BOOL;
+    j : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Before All
+observerA.SetCounter(101);
+observerB.SetCounter(102);
+observerC.SetCounter(103);
+observerD.SetCounter(104);
+propertyObserversList.AddItem(observerA);
+propertyObserversList.AddItem(observerB);
+propertyObserversList.AddItem(observerC);
+propertyObserversList.AddItem(observerD);
+
+TEST('RemoveShouldPassAndReturnTrue');
+//Assign
+//Act
+actual := propertyObserversList.Remove(observerC);
+actualCount := propertyObserversList.GetCount();
+FOR j:=0 TO 3 DO
+    __QUERYPOINTER(propertyObserversList.GetItem(j), actualPtPropertyObserverArray[j]);
+END_FOR
+//Assert
+AssertTrue(actual,'check result of remove');
+AssertEquals(expectedCount, actualCount,'check list count');
+AssertTrue(actualPtPropertyObserverArray[0]^.Equals(observerA),'check list element 0');
+AssertTrue(actualPtPropertyObserverArray[1]^.Equals(observerB),'check list element 1');
+AssertTrue(actualPtPropertyObserverArray[2]^.Equals(observerD),'check list element 2');
+TEST_FINISHED();
+
+TEST('RemoveShouldFailAndReturnFalse');
+//Assign
+//Act
+actual := propertyObserversList.Remove(observerC);
+actualCount := propertyObserversList.GetCount();
+FOR j:=0 TO 3 DO
+    __QUERYPOINTER(propertyObserversList.GetItem(j), actualPtPropertyObserverArray[j]);
+END_FOR
+//Assert
+AssertFalse(actual,'check result of remove');
+AssertEquals(expectedCount, actualCount,'check list count');
+AssertTrue(actualPtPropertyObserverArray[0]^.Equals(observerA),'check list element 0');
+AssertTrue(actualPtPropertyObserverArray[1]^.Equals(observerB),'check list element 1');
+AssertTrue(actualPtPropertyObserverArray[2]^.Equals(observerD),'check list element 2');
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RemoveAt" Id="{9d57bd7d-1e72-49e5-a3d3-f3395a0d313b}">
+      <Declaration><![CDATA[METHOD RemoveAt
+VAR
+    propertyObserversList : List_I_Observer_;
+    observerA : PropertyObserver;
+    observerB : PropertyObserver;
+    observerC : PropertyObserver;
+    observerD : PropertyObserver;
+    actualPtPropertyObserverArray : ARRAY[0..3] OF POINTER TO PropertyObserver;
+    expectedCount : INT := 3;
+    actualCount : INT;
+    actual : BOOL;
+    j : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[observerA.SetCounter(101);
+observerB.SetCounter(102);
+observerC.SetCounter(103);
+observerD.SetCounter(104);
+
+TEST('RemoveAtShouldPass');
+//Assign
+propertyObserversList.Clear();
+propertyObserversList.AddItem(observerA);
+propertyObserversList.AddItem(observerB);
+propertyObserversList.AddItem(observerC);
+propertyObserversList.AddItem(observerD);
+//Act
+actual := propertyObserversList.RemoveAt(2);
+actualCount := propertyObserversList.GetCount();
+FOR j:=0 TO 3 DO
+    __QUERYPOINTER(propertyObserversList.GetItem(j), actualPtPropertyObserverArray[j]);
+END_FOR
+//Assert
+AssertTrue(actual,'check result of remove');
+AssertEquals(expectedCount, actualCount,'check list count');
+AssertTrue(actualPtPropertyObserverArray[0]^.Equals(observerA),'check list element 0');
+AssertTrue(actualPtPropertyObserverArray[1]^.Equals(observerB),'check list element 1');
+AssertTrue(actualPtPropertyObserverArray[2]^.Equals(observerD),'check list element 2');
+TEST_FINISHED();
+
+TEST('RemoveAtMinusIndexShouldFail');
+//Assign
+propertyObserversList.Clear();
+propertyObserversList.AddItem(observerA);
+propertyObserversList.AddItem(observerB);
+propertyObserversList.AddItem(observerD);
+//Act
+actual := propertyObserversList.RemoveAt(-1);
+actualCount := propertyObserversList.GetCount();
+FOR j:=0 TO 3 DO
+    __QUERYPOINTER(propertyObserversList.GetItem(j), actualPtPropertyObserverArray[j]);
+END_FOR
+//Assert
+AssertFalse(actual,'check result of remove');
+AssertEquals(expectedCount, actualCount,'check list count');
+AssertTrue(actualPtPropertyObserverArray[0]^.Equals(observerA),'check list element 0');
+AssertTrue(actualPtPropertyObserverArray[1]^.Equals(observerB),'check list element 1');
+AssertTrue(actualPtPropertyObserverArray[2]^.Equals(observerD),'check list element 2');
+TEST_FINISHED();
+
+TEST('RemoveAtIndexGreaterThanLastIndexShouldFail');
+//Assign
+propertyObserversList.Clear();
+propertyObserversList.AddItem(observerA);
+propertyObserversList.AddItem(observerB);
+propertyObserversList.AddItem(observerD);
+//Act
+actualCount := propertyObserversList.GetCount();
+actual := propertyObserversList.RemoveAt(actualCount);
+actualCount := propertyObserversList.GetCount();
+FOR j:=0 TO 3 DO
+    __QUERYPOINTER(propertyObserversList.GetItem(j), actualPtPropertyObserverArray[j]);
+END_FOR
+//Assert
+AssertFalse(actual,'check result of remove');
+AssertEquals(expectedCount, actualCount,'check list count');
+AssertTrue(actualPtPropertyObserverArray[0]^.Equals(observerA),'check list element 0');
+AssertTrue(actualPtPropertyObserverArray[1]^.Equals(observerB),'check list element 1');
+AssertTrue(actualPtPropertyObserverArray[2]^.Equals(observerD),'check list element 2');
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RemoveRange" Id="{c7796007-158f-4ec8-aa71-b2d1f0a3037a}">
+      <Declaration><![CDATA[METHOD RemoveRange
+VAR
+    propertyObserversList : List_I_Observer_;
+    observerA : PropertyObserver;
+    observerB : PropertyObserver;
+    observerC : PropertyObserver;
+    observerD : PropertyObserver;
+    observerE : PropertyObserver;
+    observerF : PropertyObserver;
+    observerG : PropertyObserver;
+    actualPtPropertyObserverArray : ARRAY[0..3] OF POINTER TO PropertyObserver;
+    expectedCount : INT := 7 - 3;
+    actualCount : INT;
+    actual : BOOL;
+    j : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//BeforeAll
+observerA.SetCounter(101);
+observerB.SetCounter(102);
+observerC.SetCounter(103);
+observerD.SetCounter(104);
+observerE.SetCounter(105);
+observerF.SetCounter(106);
+observerG.SetCounter(107);
+
+TEST('RemoveRangeShouldPass');
+//Assign
+propertyObserversList.Clear();
+propertyObserversList.AddItem(observerA);
+propertyObserversList.AddItem(observerB);
+propertyObserversList.AddItem(observerC);
+propertyObserversList.AddItem(observerD);
+propertyObserversList.AddItem(observerE);
+propertyObserversList.AddItem(observerF);
+propertyObserversList.AddItem(observerG);
+//Act
+actual := propertyObserversList.RemoveRange(2,3);
+actualCount := propertyObserversList.GetCount();
+FOR j:=0 TO 3 DO
+    __QUERYPOINTER(propertyObserversList.GetItem(j), actualPtPropertyObserverArray[j]);
+END_FOR
+//Assert
+AssertTrue(actual,'check removeRange result');
+AssertEquals(expectedCount, actualCount,'check list count');
+AssertTrue(actualPtPropertyObserverArray[0]^.Equals(observerA),'check elemet 0');
+AssertTrue(actualPtPropertyObserverArray[1]^.Equals(observerB),'check elemet 1');
+AssertTrue(actualPtPropertyObserverArray[2]^.Equals(observerF),'check elemet 2');
+AssertTrue(actualPtPropertyObserverArray[3]^.Equals(observerG),'check elemet 3');
+TEST_FINISHED();
+
+TEST('RemoveRangeWithRangeLongerThanCountShouldPass');
+//Assign
+propertyObserversList.Clear();
+propertyObserversList.AddItem(observerA);
+propertyObserversList.AddItem(observerB);
+propertyObserversList.AddItem(observerC);
+propertyObserversList.AddItem(observerD);
+propertyObserversList.AddItem(observerE);
+propertyObserversList.AddItem(observerF);
+propertyObserversList.AddItem(observerG);
+expectedCount := 4;
+//Act
+actual := propertyObserversList.RemoveRange(4,10);
+actualCount := propertyObserversList.GetCount();
+FOR j:=0 TO 3 DO
+    __QUERYPOINTER(propertyObserversList.GetItem(j), actualPtPropertyObserverArray[j]);
+END_FOR
+//Assert
+AssertTrue(actual,'check removeRange result');
+AssertEquals(expectedCount, actualCount,'check list count');
+AssertTrue(actualPtPropertyObserverArray[0]^.Equals(observerA),'check elemet 0');
+AssertTrue(actualPtPropertyObserverArray[1]^.Equals(observerB),'check elemet 1');
+AssertTrue(actualPtPropertyObserverArray[2]^.Equals(observerC),'check elemet 2');
+AssertTrue(actualPtPropertyObserverArray[3]^.Equals(observerD),'check elemet 3');
+TEST_FINISHED();
+
+TEST('RemoveRangeWithMinusIndexShouldFail');
+//Assign
+propertyObserversList.Clear();
+propertyObserversList.AddItem(observerA);
+propertyObserversList.AddItem(observerB);
+propertyObserversList.AddItem(observerC);
+propertyObserversList.AddItem(observerD);
+propertyObserversList.AddItem(observerE);
+propertyObserversList.AddItem(observerF);
+propertyObserversList.AddItem(observerG);
+expectedCount := 7;
+//Act
+actual := propertyObserversList.RemoveRange(-1,3);
+actualCount := propertyObserversList.GetCount();
+FOR j:=0 TO 3 DO
+    __QUERYPOINTER(propertyObserversList.GetItem(j), actualPtPropertyObserverArray[j]);
+END_FOR
+//Assert
+AssertFalse(actual,'check removeRange result');
+AssertEquals(expectedCount, actualCount,'check list count');
+AssertTrue(actualPtPropertyObserverArray[0]^.Equals(observerA),'check elemet 0');
+AssertTrue(actualPtPropertyObserverArray[1]^.Equals(observerB),'check elemet 1');
+AssertTrue(actualPtPropertyObserverArray[2]^.Equals(observerC),'check elemet 2');
+AssertTrue(actualPtPropertyObserverArray[3]^.Equals(observerD),'check elemet 3');
+TEST_FINISHED();
+
+TEST('RemoveRangeWithIndexGreaterThanLastIndexShouldFail');
+//Assign
+propertyObserversList.Clear();
+propertyObserversList.AddItem(observerA);
+propertyObserversList.AddItem(observerB);
+propertyObserversList.AddItem(observerC);
+propertyObserversList.AddItem(observerD);
+propertyObserversList.AddItem(observerE);
+propertyObserversList.AddItem(observerF);
+propertyObserversList.AddItem(observerG);
+expectedCount := 7;
+//Act
+actualCount := propertyObserversList.GetCount();
+actual := propertyObserversList.RemoveRange(actualCount,3);
+actualCount := propertyObserversList.GetCount();
+FOR j:=0 TO 3 DO
+    __QUERYPOINTER(propertyObserversList.GetItem(j), actualPtPropertyObserverArray[j]);
+END_FOR
+//Assert
+AssertFalse(actual,'check removeRange result');
+AssertEquals(expectedCount, actualCount,'check list count');
+AssertTrue(actualPtPropertyObserverArray[0]^.Equals(observerA),'check elemet 0');
+AssertTrue(actualPtPropertyObserverArray[1]^.Equals(observerB),'check elemet 1');
+AssertTrue(actualPtPropertyObserverArray[2]^.Equals(observerC),'check elemet 2');
+AssertTrue(actualPtPropertyObserverArray[3]^.Equals(observerD),'check elemet 3');
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

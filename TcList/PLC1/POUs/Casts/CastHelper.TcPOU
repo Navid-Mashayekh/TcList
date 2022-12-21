@@ -47,6 +47,20 @@ END_VAR
 I_EquatableToPerson := _pointerToCastedItem;]]></ST>
       </Implementation>
     </Method>
+    <Method Name="I_EquatableToPropertyObserver" Id="{e0ad083c-a0b8-4528-9ada-7d7f45e5ad3b}">
+      <Declaration><![CDATA[METHOD I_EquatableToPropertyObserver : POINTER TO PropertyObserver
+VAR_IN_OUT
+	item : I_Equatable;
+END_VAR
+VAR
+    _pointerToCastedItem : POINTER TO PropertyObserver;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[__QUERYPOINTER(item, _pointerToCastedItem);
+I_EquatableToPropertyObserver := _pointerToCastedItem;]]></ST>
+      </Implementation>
+    </Method>
     <Method Name="ListToList_Person_" Id="{b199b668-170e-449a-9582-9aa71a6c3c5f}">
       <Declaration><![CDATA[METHOD PUBLIC ListToList_Person_ : List_Person_
 VAR_INPUT

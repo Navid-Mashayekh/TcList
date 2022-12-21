@@ -4,6 +4,7 @@
     <Declaration><![CDATA[PROGRAM Tests
 VAR
     list_Person_Test : List_Person_Test;
+    list_I_Observer_Test : List_I_Observer_Test;
 END_VAR
 ]]></Declaration>
     <Implementation>

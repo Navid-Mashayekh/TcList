@@ -269,16 +269,17 @@ IF count <= GVL.LIST_UPPER_BOUND AND index >= 0 THEN
 END_IF
 
 Insert := _result;
+
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="LastIndexOf" Id="{23f4a429-ceb8-4ee7-a193-ca9e0095d590}">
+    <Method Name="LastIndexOfItem" Id="{23f4a429-ceb8-4ee7-a193-ca9e0095d590}">
       <Declaration><![CDATA[(*
 Purpose: Returns the zero-based index of the last occurrence in the List
 Parameters: item:{Implements I_X}, The object to locate in the List
 Return: INT, The zero-based index of the last occurrence of item in the List if found, otherwise -1
 *)
-METHOD PUBLIC LastIndexOf : INT
+METHOD PUBLIC LastIndexOfItem : INT
 VAR_INPUT
     item : I_Observer;
 END_VAR
@@ -301,7 +302,7 @@ END_VAR
     END_FOR
 END_IF
 
-LastIndexOf := _result;]]></ST>
+LastIndexOfItem := _result;]]></ST>
       </Implementation>
     </Method>
     <Method Name="Remove" Id="{0b3ad9f2-7037-4158-8871-1f7fe940d888}">

@@ -7,24 +7,57 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    onUpdateCounter : INT;
+    _name : STRING;
+    _counter : INT;
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
+    <Method Name="Equals" Id="{0942c81d-1b19-44f1-9932-d56d4230c531}">
+      <Declaration><![CDATA[METHOD Equals : BOOL
+VAR_INPUT
+    other : I_Equatable;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GetCounter() = GVL.CastHelper.I_EquatableToPropertyObserver(other)^.GetCounter() THEN
+    Equals := TRUE;
+ELSE
+    Equals := FALSE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetCounter" Id="{344ee8b2-6fbf-4e4f-ac4c-aba3e0b47456}">
+      <Declaration><![CDATA[METHOD GetCounter : INT
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[GetCounter := _counter;]]></ST>
+      </Implementation>
+    </Method>
     <Method Name="OnError" Id="{dcfdad8f-5616-4c87-b4ca-66d436821b42}">
       <Declaration><![CDATA[METHOD OnError
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[_counter := _counter - 1;]]></ST>
       </Implementation>
     </Method>
     <Method Name="OnUpdate" Id="{43519026-10e7-428b-93a2-baf4968a1715}">
       <Declaration><![CDATA[METHOD OnUpdate
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[onUpdateCounter := onUpdateCounter + 1;]]></ST>
+        <ST><![CDATA[_counter := _counter + 1;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetCounter" Id="{f3f56185-b501-4574-889d-19524cdab58d}">
+      <Declaration><![CDATA[METHOD SetCounter
+VAR_INPUT
+    counter : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_counter := counter;]]></ST>
       </Implementation>
     </Method>
   </POU>

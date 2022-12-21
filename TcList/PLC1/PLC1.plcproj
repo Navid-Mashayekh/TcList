@@ -60,6 +60,9 @@
     <Compile Include="POUs\List\List_Person_Test.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\List\List_I_Observer_Test.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\Tests.TcPOU">
       <SubType>Code</SubType>
     </Compile>
