@@ -640,6 +640,7 @@ END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[TEST('GetCapacityShouldPass');
+//Assign
 //Act
 actualCapacity := personsList.GetCapacity();
 //Assert
@@ -667,6 +668,7 @@ END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[TEST('GetCountShouldReturnZero');
+//Assign
 //Act
 actualCount := personsList.GetCount();
 //Assert
@@ -929,6 +931,7 @@ personD.SetName('D');
 
 TEST('InsertShouldPassAndReturnTheLastIndex');
 //Assign
+personsList.Clear();
 personsList.AddItem(personA);
 personsList.AddItem(personB);
 personsList.AddItem(personC);
@@ -1046,6 +1049,7 @@ personG.SetName('G');
 
 TEST('InsertRangeShouldPassAndReturnTheLastIndex');
 //Assign
+personsList.Clear();
 personsList.AddItem(personA);
 personsList.AddItem(personB);
 personsList.AddItem(personC);
@@ -1228,13 +1232,14 @@ personA.SetName('A');
 personB.SetName('B');
 personC.SetName('C');
 personD.SetName('D');
+
+TEST('RemoveShouldPassAndReturnTrue');
+//Assign
+personsList.Clear();
 personsList.AddItem(personA);
 personsList.AddItem(personB);
 personsList.AddItem(personC);
 personsList.AddItem(personD);
-
-TEST('RemoveShouldPassAndReturnTrue');
-//Assign
 //Act
 actual := personsList.Remove(personC);
 actualCount := personsList.GetCount();
@@ -1249,6 +1254,10 @@ TEST_FINISHED();
 
 TEST('RemoveShouldFailAndReturnFalse');
 //Assign
+personsList.Clear();
+personsList.AddItem(personA);
+personsList.AddItem(personB);
+personsList.AddItem(personD);
 //Act
 actual := personsList.Remove(personC);
 actualCount := personsList.GetCount();

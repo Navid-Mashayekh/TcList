@@ -147,6 +147,7 @@ observerA.SetCounter(101);
 observerB.SetCounter(102);
 observerC.SetCounter(103);
 observerD.SetCounter(104);
+propertyObserversList.Clear();
 propertyObserversList.AddItem(observerA);
 propertyObserversList.AddItem(observerB);
 propertyObserversList.AddItem(observerC);
@@ -198,6 +199,7 @@ END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[TEST('GetCapacityShouldPass');
+//Assign
 //Act
 actualCapacity := propertyObserversList.GetCapacity();
 //Assert
@@ -225,6 +227,7 @@ END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[TEST('GetCountShouldReturnZero');
+//Assign
 //Act
 actualCount := propertyObserversList.GetCount();
 //Assert
@@ -256,7 +259,7 @@ VAR
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[TEST('GetPropertyObserverShouldPass');
+        <ST><![CDATA[TEST('GetItemShouldPass');
 //Assign
 expectedObserverA.SetCounter(101);
 expectedObserverB.SetCounter(102);
@@ -339,6 +342,7 @@ observerD.SetCounter(104);
 
 TEST('InsertShouldPassAndReturnTheLastIndex');
 //Assign
+propertyObserversList.Clear();
 propertyObserversList.AddItem(observerA);
 propertyObserversList.AddItem(observerB);
 propertyObserversList.AddItem(observerC);
@@ -480,13 +484,14 @@ observerA.SetCounter(101);
 observerB.SetCounter(102);
 observerC.SetCounter(103);
 observerD.SetCounter(104);
+
+TEST('RemoveShouldPassAndReturnTrue');
+//Assign
+propertyObserversList.Clear();
 propertyObserversList.AddItem(observerA);
 propertyObserversList.AddItem(observerB);
 propertyObserversList.AddItem(observerC);
 propertyObserversList.AddItem(observerD);
-
-TEST('RemoveShouldPassAndReturnTrue');
-//Assign
 //Act
 actual := propertyObserversList.Remove(observerC);
 actualCount := propertyObserversList.GetCount();
@@ -503,6 +508,10 @@ TEST_FINISHED();
 
 TEST('RemoveShouldFailAndReturnFalse');
 //Assign
+propertyObserversList.Clear();
+propertyObserversList.AddItem(observerA);
+propertyObserversList.AddItem(observerB);
+propertyObserversList.AddItem(observerD);
 //Act
 actual := propertyObserversList.Remove(observerC);
 actualCount := propertyObserversList.GetCount();
